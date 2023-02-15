@@ -1,0 +1,4 @@
+SELECT *
+FROM Student
+    ORDER By Data
+        OFFSET 4 ROWS

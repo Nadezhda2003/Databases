@@ -1,0 +1,6 @@
+SELECT *
+FROM Student
+    ORDER BY
+        FIO
+        OFFSET 4 ROWS
+        FETCH NEXT 5 ROWS ONLY

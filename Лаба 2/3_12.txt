@@ -1,0 +1,4 @@
+SELECT *
+FROM Student
+    ORDER BY FIO
+        OFFSET 2 ROWS
