@@ -1,5 +1,5 @@
 SELECT
-    FIO + 'поступил/а в ' + Cast(godpost AS n varchar) 
+    FIO + 'поступил/а в ' + Cast(godpost AS nvarchar) 
     AS О поступлении
     FROM
         Student;
