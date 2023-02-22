@@ -1,0 +1,7 @@
+1 GalaxyS8 Samsung 2 46000.00
+2 GalaxyS8Plus Samsung 1 56000.00
+3 iPhone6 Apple 3 36000.00
+4 iPhone6S Apple 2 4100.00
+5 iPhone7 Apple 5 52000.00
+6 Mi6 Xiaomi 5 28.00
+7 OnePlus5 'OnePlus 6 38000.00

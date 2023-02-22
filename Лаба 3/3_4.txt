@@ -1,0 +1,4 @@
+SELECT ProductName + '(' + Manufacturer +')' AS ModelName, Price
+INTO ProductSummary
+FROM Products
+SELECT * FROM ProductSummary

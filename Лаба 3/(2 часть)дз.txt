@@ -1,0 +1,40 @@
+--Все товары, производителем которых является компания Samsung
+SELECT * FROM Products
+WHERE Manufacturer='Samsung'
+
+--Найти все товары, у которых цена больше 45000
+SELECT * FROM Products
+WHERE Price>45000
+
+--Найти все товары, у которых совокупная стоимость больше 200 000 ( Price * ProductCount > 200000)
+SELECT *, ProductCount*Price AS TotalSum FROM Products
+WHERE TotalSum > 200000
+
+--Выбрать все товары, у которых производитель Samsung и одновременно цена больше 50000
+SELECT * FROM Products
+WHERE Manufacturer='Samsung' AND Price>50000
+
+--Выбрать все товары, у которых либо производитель Samsung, либо цена больше 50000
+SELECT * FROM Products
+WHERE Manufacturer='Samsung' OR Price>50000
+
+--Выбрать все товары, у которых производитель не Samsung
+SELECT * FROM Products
+WHERE Manufacturer!='Samsung'
+
+--Выбрать товары, которых на складе больше 2 и у которых одновременно цена
+--больше 30000, либо те товары, производителем которых является Samsung
+SELECT * FROM Products
+WHERE (ProductCount>2 AND Price>30000) OR Manufacturer='Samsung'
+
+--Выбрать товары, у которых производитель либо Samsung, либо Xiaomi, либо Huawei.
+SELECT * FROM Products
+WHERE Manufacturer IN ('Samsung', 'Xiaomi', 'Huawei')
+
+--Выбрать все товары, у которых цена от 20000 до 40000 (начальное и конечное значения также включаются в диапазон).
+SELECT * FROM Products
+WHERE Price BETWEEN 20000 AND 40000
+
+--Выбрать товары, запасы которых на определенную сумму (цена * количество) в диапазоне 100000 - 200000
+SELECT *, Price*ProductCount AS TotalSum FROM Products
+WHERE TotalSum BETWEEN 100000 AND 200000

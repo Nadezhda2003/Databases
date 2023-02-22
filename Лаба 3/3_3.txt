@@ -1,0 +1,4 @@
+SELECT ProductName + '(' + Manufacturer +')' AS ModelName,
+Price,
+Price * ProductCount AS TotalSum
+FROM Products;
