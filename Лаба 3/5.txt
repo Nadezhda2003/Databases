@@ -1,0 +1,21 @@
+-- Сортировка по возрастанию (ProductName)
+SELECT * FROM Products
+ORDER BY ProductName ASC;
+
+-- Сортировка по убыванию (ProductName)
+SELECT * FROM Products
+ORDER BY ProductName DESC;
+
+-- Сортировка по убыванию ProductName и возрастанию Manufacturer
+SELECT * FROM Products
+ORDER BY ProductName DESC, Manufacturer ASC;
+
+-- Сортировка
+SELECT ProductName, ProductCount * Price AS TotalSum
+FROM Products
+ORDER BY TotalSum;
+
+-- Сортировка выражение на основе столбцов:
+SELECT ProductName, Price, ProductCount
+FROM Products
+ORDER BY ProductCount * Price;
