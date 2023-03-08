@@ -1,0 +1,141 @@
+CREATE DATABASE Polyclinic
+ON
+(
+    NAME = Polyclinic_data,
+    FILENAME='c:\Users\semen\database\polyclinic.mdf',
+    SIZE=10MB,
+    MAXSIZE=100MB,
+    FILEGROWTH=5MB
+)
+LOG ON
+(
+    NAME = 'Polyclinic_log',
+    FILENAME ='c:\Users\semen\database\polyclinic.ldf',
+    SIZE = 5MB,
+    MAXSIZE=100MB,
+    FILEGROWTH = 5%
+)
+Go
+use Polyclinic
+--Создание таблицы Диагноз
+Create table Diagnosis
+(
+    Id int CONSTRAINT PK_Diagnosis_Id Primary key Identity,
+    DName NVARCHAR(20) NOT NULL CONSTRAINT UQ_Diagnosis_DName UNIQUE
+)
+
+--Создание таблицы Специальность
+Create table Speciality
+(
+    Id int CONSTRAINT PK_Speciality_Id Primary key Identity,
+    SName NVARCHAR(20) NOT NULL CONSTRAINT UQ_Speciality_DName UNIQUE
+)
+
+--Созадние таблицы Паспортные данные
+Create table Passport
+(
+    Id_Num VARCHAR(14) PK_Passport_Id_Num Primary Key NOT NULL UNIQUE,
+    Ser_Num VARCHAR(9) NOT NULL,
+    Vudan NVARCHAR(20) NOT NULL,
+    Vudan_Date Date NOT NULL
+)
+
+Создание таблицы Пациент
+Create table Patient
+(
+    N_Card int NOT NULL CONSTRAINT PK_Patient_N_Card Primary Key UNIQUE,
+    Name NVARCHAR(20) NOT NULL,
+    Surname NVARCHAR(20) NOT NULL,
+    MName NVARCHAR(20) NOT NULL,
+    Birth_Date Date NOT NULL CONSTRAINT CK_Patient_Date CHECK(Birth_Date BETWEEN 1923-01-01 AND 2023-03-09)
+)
+
+--Создание таблицы Врач
+Create table Doctor
+(
+    Id_Doc int CONSTRAINT PK_Doctor_Id_Doc Primary Key Identity,
+    DName NVARCHAR(20) NOT NULL,
+    DSurname NVARCHAR(20) NOT NULL,
+    DMName NVARCHAR(20) NOT NULL,
+    DBirth_Date Date NOT NULL CONSTRAINT CK_Patient_Date CHECK(Birth_Date BETWEEN 1923-01-01 AND 2023-03-09)
+    PId_Num VARCHAR(14) REFERENCES Passport(Id_Num) ON DELETE CASCADE,
+    PId int REFERENCES Speciality(Id) ON DELETE CASCADE,
+    Exp int Default 0
+)
+
+--Создание таблицы Учет Посещения
+Create table Visit
+(
+    VId int CONSTRAINT PK_Visit_VId Primary Key Identity,
+    VDate Date NOT NULL,
+    VPatient int,
+    VDoc int,
+    Diad int,
+    Foreign Key (VPatient) REFERENCES Patient(N_Card) ON DELETE CASCADE,
+    Foreign Key (VDoc) REFERENCES Doctor(Id_Doc) ON DELETE CASCADE,
+    Foreign Key (Diad) REFERENCES Diagnosis(Id) ON DELETE CASCADE
+)
+
+--Заполнение таблицы Диагноз
+insert into Diagnosis Values
+('Миопия'), ('Плоскостопие'), ('Депрессия'),('Дерматит'),
+('Астма'),('Туберкулез'), ('Шизофрения'),('Кардиомиопатия'), ('Меланома'),
+('Отит')
+
+--Заполнение таблицы Специальность
+insert into Speciality Values
+('Дерматолог'),('Кардиолог'),('Офтальмолог'),('Пульмонолог'),
+('Психиатр'),('Ортопед'),('Отоларинголог'),('Фтизиатр'),
+('Онколог'),('Психотерапевт')
+
+--Заполнение таблицы Паспортные данные
+insert into Passport Values
+('6100102A005PB6','MP1236409', 'Первомайское РУВД г. Минска', 2017-01-02),
+('5300601C120PB9','AB8431234','Московское РОВД г. Брест',2015-03-21),
+('4120396С012PB2','AB8423412','Ленинское РОВД г. Брест', 2010-03-12),
+('3080198M071PB2','KB1750912','Могилевское РОВД', 2012-10-09),
+('5080303M102PB3','KB1725123','Могилевское РОВД', 2018-11-28),
+('3090269H032PB5','HB7923454','Новобелицкое ГОВД г. Гомеля',2014-02-26),
+('4090372K086PB7','KH4972375','Ленинское ГОВД г. Гродно',2017-05-18),
+('3240487E089PB4','BM3577599','Первомайское ГОВД г. Витебска',2022-08-24),
+('4201063B004PB8','MC3568945','Жодинское ГОВД',2008-06-29),
+('6091001A045PB3','MP2359745','Советское РУВД г. Минска', 2017-03-12)
+
+--Заполнение таблицы Пациент
+insert into Patient Values
+(176534, 'Екатерина','Бажанова','Викторовна', 1998-12-08),
+(128793, 'Дмитрий','Глебов','Васильевич',2002-03-12),
+(108374, 'Василий','Коваленко','Петрович', 1963-10-21),
+(102947, 'Виктория','Баранова','Вадимовна', 2007-06-15),
+(124864, 'Владимир','Белопольский','Сергеевич', 1986-04-28),
+(120494, 'Павел','Семашкевич','Викторович', 1091-12-25),
+(124097, 'Александра','Ловкис','Сергеевна',2004-03-31),
+(137453, 'Виктория','Комиссарова','Викторовна',2003-07-28),
+(102479, 'Андрей','Александров','Александрович', 1976-10-26),
+(110384, 'Светлана','Мироненко','Михайловна', 2005-09-01)
+
+--Заполнение таблицы Врач
+insert into Doctor Values
+('Виктория', 'Менделеева','',2002-01-10,'6100102A005PB6',,Default),
+('', '','',2001-06-30,'5300601C120PB9',,),
+('', '','',1996-03-12,'4120396С012PB2',,),
+('', '','',1998-01-08,'3080198M071PB2',,),
+('', '','',2003-03-08,'5080303M102PB3',,Default),
+('', '','',1996-02-09,'3090269H032PB5',,),
+('', '','',1972-03-09,'4090372K086PB7,,),
+('', '','',1987-04-24,'3240487E089PB4',,),
+('', '','',1963-10-20,'4201063B004PB8',,),
+('', '','',2001-10-09,'6091001A045PB3',,)
+
+--Заполнение таблицы Учет Посещения
+insert into Visit Values
+(,,,),
+(,,,),
+(,,,),
+(,,,),
+(,,,),
+(,,,),
+(,,,),
+(,,,),
+(,,,),
+(,,,)

@@ -1,0 +1,4 @@
+use master
+Create database Ucheb_4;
+
+exec  sp_detach_db Ucheb_4;

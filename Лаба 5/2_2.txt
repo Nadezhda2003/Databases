@@ -1,0 +1,14 @@
+    CREATE DATABASE TestDatabas1
+    ON
+    (
+        NAME = TestDatabas1_data,
+        FILENAME='c:\Users\semen\database\test1.mdf',
+    )
+    LOG ON
+    (
+        NAME = 'TestDatabas1_log',
+        FILENAME ='c:\Users\semen\database\test1.ldf',
+        SIZE = 5MB,
+        MAXSIZE=100MB,
+        FILEGROWTH = 5%
+    )

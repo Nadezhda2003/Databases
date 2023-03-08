@@ -1,0 +1,49 @@
+CREATE DATABASE Ucheb_0
+ON PRIMARY(FILENAME='C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\Ucheb_4.mdf')
+FOR ATTACH;
+
+use master
+EXEC SP_HELPDB Products;
+
+use master
+EXEC SP_PENAMEDB Ucheb_0, Ucheb_5;
+
+--Изменение параметров файла
+ALTER DATABASE Ucheb_5
+MODIFY FILE
+(
+    NAME='Ucheb_5',
+  SIZE = 100mb
+)
+
+--Добавление файла
+ALTER DATABASE Ucheb_5
+ADD FILE 
+(
+ NAME = dbFile2,
+ FILENAME = 'c:\Data\dbfile2.ndf',
+ SIZE = 5MB,
+ FILEGROWTH = 5MB
+)
+
+--Удаление файла
+ALTER DATABASE Ucheb_5 
+REMOVE FILE dbFile2
+
+--Добавление файловой группы
+ALTER DATABASE Ucheb_5
+ADD FILEGROUP fgNewGroup
+
+--Добавление файла в файловую группу
+ALTER DATABASE Ucheb_5
+ADD FILE 
+(
+ NAME = dbFile2,
+ FILENAME = 'c:\Data\dbfile2.ndf',
+ SIZE = 5MB,
+ FILEGROWTH = 5MB
+) TO FILEGROUP fgNewGroup
+
+--Удаление файловой группы
+ALTER DATABASE Ucheb_5
+REMOVE FILEGROUP fgNewGroup
