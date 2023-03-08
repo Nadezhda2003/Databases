@@ -1,0 +1,29 @@
+    CREATE DATABASE productsdb
+    ON
+    (
+        NAME = productsdb,
+        FILENAME='c:\Users\semen\database\productsdb.mdf',
+    )
+    Go
+    Use productsdb;
+    Create table Product
+    (
+        Id int Identity Primary Key,
+        PName NVARCHAR(30) NOT NULL,
+        Proizvod NVARCHAR(20) NOT NULL,
+        ProductCount int Default 0,
+        Price Money NOT NULL
+    )
+    --Вставка
+    insert Product Values('iPhone 7', 'Apple', 5, 5100)
+    --Вставка в конкретные столбцы
+    insert Product(PName, Price, Proizvod) Values('iPhone 6', 6100, 'Apple')
+    --Добавление нескольких строк
+    insert into Product Values
+    ('iPhone 6', 'Apple', 3, 36000),
+    ('Galaxy S8', 'Samsung', 2, 46000),
+    ('Galaxy S8 Plus', 'Samsung', 1, 56000)
+
+    --Default
+    insert Product(PName, Proizvod, ProductCount, Price)
+    Values('Mi6', 'Xiaomi', Default, 28000)

@@ -1,0 +1,20 @@
+use master
+Create database InternetStore
+Go
+Use InternetStore;
+Create table Klient_VK
+(
+    Id int Primary Key Indentity,
+    Age int Default 18,
+    NName NVARCHAR(20) NOT NULL,
+    Fio NVARCHAR(20) NOT NULL,
+    Email VARCHAR(30) UNIQUE,
+    Phone VARCHAR(20) UNIQUE
+);
+Create table Zakaz_VKK1
+(
+    Id int Primary Key Identity,
+    KlientId int,
+    CreatedA Date,
+    Foreign Key (KlientId) REFERENCES Klient_VKK(ID) ON DELETE CASCADE
+)

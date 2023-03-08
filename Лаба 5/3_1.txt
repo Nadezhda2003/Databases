@@ -1,0 +1,199 @@
+use master
+Create database TestBD1
+
+--Создание таблицы
+use TestBD1
+Create table Klient
+(
+    Id int,
+    Age int,
+    NName NVARCHAR(20),
+    Fio NVARCHAR(20),
+    Email VARCHAR(30),
+    Phone VARCHAR(20)
+)
+
+--Создание таблицы с первичным ключом на уровне столбца
+use TestBD1
+Create table Klient_PR_K1
+(
+    Id int Primary Key,
+    Age int,
+    NName NVARCHAR(20),
+    Fio NVARCHAR(20),
+    Email VARCHAR(30),
+    Phone VARCHAR(20)
+)
+
+--Создание таблицы с первичным ключом на уровне таблицы
+use TestBD1
+Create table Klient_PR_K_T
+(
+    Id int,
+    Age int,
+    NName NVARCHAR(20),
+    Fio NVARCHAR(20),
+    Email VARCHAR(30),
+    Phone VARCHAR(20),
+    Primary Key(Id)
+)
+
+--Создание таблицы с составным первичным ключом
+use TestBD1
+Create table Zakaz_l
+(
+    Zakaz int,
+    Produkt int,
+    Kol_vo int,
+    Cena Money,
+    Primary Key(Zakaz, Produkt)
+)
+
+--Создание таблицы со столбцов индентификатором
+use TestBD1
+Create table Klient_PR_K_ID
+(
+    Id int Primary Key Identity,
+    Age int,
+    NName NVARCHAR(20),
+    Fio NVARCHAR(20),
+    Email VARCHAR(30),
+    Phone VARCHAR(20)
+)
+
+--UNIQUE
+use TestBD1
+Create table Klient_PR_K_ID_UN
+(
+    Id int Primary Key Identity,
+    Age int,
+    NName NVARCHAR(20),
+    Fio NVARCHAR(20),
+    Email VARCHAR(30) UNIQUE,
+    Phone VARCHAR(20) UNIQUE
+)
+
+--UNIQUE 2
+use TestBD1
+Create table Klient_PR_K_ID_UN1
+(
+    Id int Primary Key Identity,
+    Age int,
+    NName NVARCHAR(20),
+    Fio NVARCHAR(20),
+    Email VARCHAR(30),
+    Phone VARCHAR(20)
+    UNIQUE(Email, Phone)
+)
+
+--NULL и NOT NULL
+use TestBD1
+Create table Klient_PR_K_ID_UN_Def
+(
+    Id int Primary Key Identity,
+    Age int Default 18,
+    NName NVARCHAR(20) NOT NULL,
+    Fio NVARCHAR(20) NOT NULL,
+    Email VARCHAR(30) UNIQUE,
+    Phone VARCHAR(20) UNIQUE
+)
+
+--CHECK
+use TestBD1
+Create table Klient_PR_K_ID_UN_Def_CH
+(
+    Id int Primary Key Identity,
+    Age int Default 18 CHECK(Age>0 AND Age<100),
+    NName NVARCHAR(20) NOT NULL,
+    Fio NVARCHAR(20) NOT NULL,
+    Email VARCHAR(30) UNIQUE CHECK(Email!=''),
+    Phone VARCHAR(20) UNIQUE CHECK(Phone!='')
+)
+
+--CHECK 2
+use TestBD1
+Create table Klient_PR_K_ID_UN_Def_CH1
+(
+    Id int Primary Key Identity,
+    Age int Default 18,
+    NName NVARCHAR(20) NOT NULL,
+    Fio NVARCHAR(20) NOT NULL,
+    Email VARCHAR(30) UNIQUE,
+    Phone VARCHAR(20) UNIQUE,
+    CHECK(Age>0 AND Age<100) AND (Email!='') AND (Phone!='')
+)
+
+--CONSTRAINT
+use TestBD1
+Create table Klient_im_ogr
+(
+    Id int CONSTRAINT PK_Klient_Id Primary Key Identity,
+    Age int
+    CONSTRAINT DF_Klient_Age Default 18
+    CONSTRAINT CK_Klient_Age CHECK(Age>0 AND Age<100),
+    NName NVARCHAR(20) NOT NULL,
+    Fio NVARCHAR(20) NOT NULL,
+    Email VARCHAR(30) CONSTRAINT UQ_Klient_Email UNIQUE,
+    Phone VARCHAR(20) CONSTRAINT UQ_Klient_Phone UNIQUE
+)
+Create table Klient_im_ogr1
+(
+    Id int Identity,
+    Age int CONSTRAINT DF_Klient_Age1 Default 18,
+    NName NVARCHAR(20) NOT NULL,
+    Fio NVARCHAR(20) NOT NULL,
+    Email VARCHAR(30),
+    Phone VARCHAR(20),
+    CONSTRAINT CK_Klient_Age1 CHECK(Age >0 And Age<100),
+    CONSTRAINT PK_Klient_Id1 Primary Key(Id),
+    CONSTRAINT UQ_Klient_Email1 UNIQUE(Email),
+    CONSTRAINT UQ_Klient_Phone1 UNIQUE(Phone)
+)
+
+--Создание двух таблиц и связывание их с помощью внешнего ключа
+use TestBD1
+Create table Klient_VKK
+(
+    Id int Primary Key Identity,
+    Age int Default 18,
+    NName NVARCHAR(20) NOT NULL,
+    Fio NVARCHAR(20) NOT NULL,
+    Email VARCHAR(30) UNIQUE,
+    Phone VARCHAR(20) UNIQUE
+)
+Create table Zakaz_VKK
+{
+    Id int Primary Key Identity,
+    KlientId int REFERENCES Klient_VKK(Id),
+    CreatedA Date
+}
+
+--CASCADE
+use TestBD1
+Create table Zakaz_VKK1
+(
+    Id int Primary Key Identity,
+    KlientId int,
+    CreatedA Date,
+    Foreign Key (KlientId) REFERENCES Klient_VKK(ID) ON DELETE CASCADE
+)
+
+--Установка NULL
+use TestBD1
+Create table Zakaz_VKK2
+(
+    Id int Primary Key Identity,
+    KlientId int,
+    CreatedA Date,
+    Foreign Key (KlientId) REFERENCES Klient_VKK(ID) ON DELETE SET NULL
+)
+
+--Установка значения по умолчанию
+use TestBD1
+Create table Zakaz_VKK3
+(
+    Id int Primary Key Identity,
+    KlientId int,
+    CreatedA Date,
+    Foreign Key (KlientId) REFERENCES Klient_VKK(ID) ON DELETE SET DEFAULT 
+)
