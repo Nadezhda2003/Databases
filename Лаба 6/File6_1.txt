@@ -1,0 +1,88 @@
+--Создание таблицы
+use TestDatabas;
+if Object_ID('dbo.klient_alt','U') is not NULL
+Drop table dbo.klient_alt;
+Create table Klient_alt
+(
+    Id int Primary Key,
+    Age int,
+    NName NVARCHAR(20),
+    Fio NVARCHAR(20),
+    Email VARCHAR(30),
+    Phone VARCHAR(20)
+)
+
+--Добавление нового столбца
+use TestDatabas;
+Alter Table dbo.Klient_alt
+Add Adress NVARCHAR(50) NULL;
+
+--Добавление не нулевого столбца
+use TestDatabas;
+Alter Table dbo.Klient_alt
+ADD Adress NVARCHAR(50) Not Null Default 'нет';
+
+--Удаление столбца
+use TestDatabas;
+Alter table dbo.klient_alt
+drop column Phone
+
+--Добавление столбца Phone через SSMS
+
+--Изменение типа столбца
+use TestDatabas;
+Alter table dbo.Klient_alt
+Alter column NName NVARCHAR(200);
+
+--Добавление ограничения CHECK
+use TestDatabas;
+Alter table dbo.Klient_alt With NoCheck
+ADD CHECK (Age>21)
+
+--Добавление внешнего ключа. Добавление первичного ключа.
+use TestDatabas;
+if Object_ID('dbo.Klient_alt', 'U') is not Null
+Drop Table dbo. Klient_alt;
+Create table Klient_alt
+(
+    Id int Primary key Identity,
+    Age int not null,
+    NName NVARCHAR(20) Not Null,
+    Fio NVARCHAR(20) Not Null,
+    Email VARCHAR(30) UNIQUE,
+    Phone VARCHAR(20) UNIQUE
+);
+if Object_ID('dbo.Zakaz', 'U') is not null
+Drop Table dbo.Zakaz;
+Create table Zakaz
+(
+    Id int Identity,
+    KlientID int,
+    CreatedA Date
+);
+Alter Table Zakaz
+Add Foreign key (KlientID) REFERENCES Klient_alt(Id);
+Alter Table Zakaz
+Add Primary Key(Id);
+
+--Добавление(Удаление) ограничений с именами
+use TestDatabas;
+Alter Table Zakaz
+Drop ///;
+
+use TestDatabas;
+Alter table dbo.Zakaz
+Add CONSTRAINT PK_Zakaz_id Primary Key(Id);
+Alter Table dbo.Zakaz
+ADD CONSTRAINT FK_Zakaz_TO_Klient_Alt
+Foreign Key(KlientID) REFERENCES Klient_alt(Id);
+Alter Table dbo.Klient_alt
+Add CONSTRAINT CK_Klient_alt_age2 CHECK(Age>0);
+
+--Удаление ограничений
+use TestDatabas;
+exec sp_help Zakaz
+
+--Переименование таблиц и других объектов баз данных
+use TestDatabas
+exec sp_rename 'Klient_alt.Fio', 'Fi'
