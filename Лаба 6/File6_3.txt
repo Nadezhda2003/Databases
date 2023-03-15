@@ -1,0 +1,191 @@
+use Ucheb_6_Bazhanova
+Create table Tabl_Kontinent$
+(
+    Nazvanie VARCHAR(20) Not null,
+    Stolica VARCHAR(20) Not null,
+    Pl int Not null,
+    KolNas int not null,
+    Kontinent VARCHAR(20) Not null
+)
+isert into Tabl_Kontinent$ Values
+('Австрия','Вена',83858,8741753,'Европа'),
+('Азербайджан','Баку', 86600,9705600,'Азия'),
+('Албания','Тирана',28748,2866026,'Европа'),
+('Алжир','Алжир',2381740,39813722,'Африка'),
+('Ангола','Луанда',1246700,25831000,'Африка'),
+('Аргентина','Буэнос-Айрес',2766890,43847000,'Южная Америка'),
+('Афганистан','Кабул',647500,29822848,'Азия'),
+('Бангладеш','Дакка',144000,160221000,'Азия'),
+('Бахрейн','Манама',701,1397000,'Азия'),
+('Белиз','Бельмопан',22966,377968,'Северная Америка'),
+('Белоруссия','Минск',207595,9498400,'Европа'),
+('Бельгия','Брюссель',30528,11250585,'Европа'),
+('Бенин','Порто-Ново',112620,11167000,'Африка'),
+('Болгария','София',110910,7153784,'Европа'),
+('Боливия','Сукре',1098580,10985059,'Южная Америка'),
+('Ботсвана','Габороне',600370,2209208,'Африка'),
+('Бразилия','Бразилиа',8511965,206081432,'Южная Америка'),
+('Буркина-Фасо','Уагадугу',274200,19034397,'Африка'),
+('Бутан','Тхимпху',47000,784000,'Азия'),
+('Великобритания','Лондон',244820,65341183,'Европа'),
+('Венгрия','Будапешт',93030,9830485,'Европа'),
+('Венесуэла','Каракас',912050,31028637,'Южная Америка'),
+('Восточный Тимор','Дили',14874,1167242,'Азия'),
+('Вьетнам','Ханой',329560,91713300,'Азия')
+
+--Вывести максимальную площадь стран
+select MaX(Pl) as max_PL FROM Tabl_Kontinent$;
+
+--Вывести наименьшее население стран в Африке
+select MIN(KolNas) As min_KolNas from Tabl_Kontinent$
+Where Kontinent = 'Африка';
+
+--Вывести суммарное население стран Северной и Южной Америки
+select SUM(KolNas) As sum_KolNas From Tabl_Kontinent$
+Where Kontinent = 'Северная Америка' Or 'Южная Америка';
+
+--Вывести среднее население стран, кроме европейских. Результат
+--округлить до двух знаков
+select ROUND(AVG(CAST(KolNas as FLOAT)), 2) AS SR_KolNas from Tabl_Kontinent$
+Where Kontinent!='Европа';
+
+--Вывести количество стран, название которых начинается с буквы «С»
+select Count(*) as Kol
+from Tabl_Kontinent$
+where Left(Nazvanie, 1) ='С';
+
+--Вывести количество континентов, где есть страны
+select Count(Distinct Kontinent) AS KOl_Kontinent from Tabl_Kontinent$;
+
+--Вывести разницу населения между странами с наибольшим и наименьшим
+--количеством граждан
+select MAX(KolNas) - MIN(KolNas) As Razn From Tabl_Kontinent$;
+
+--Вывести количество стран на каждом континенте. Результат отсортировать
+-- по количеству стран по убыванию
+select Kontinent, Count(Nazvanie) As Kol_Stran From Tabl_Kontinent$
+Group By Kontinent
+ORDER By Kol_Stran Desc
+
+--Вывести количество стран по первым буквам в названии.
+--Результат отсортирование в алфавитном порядке
+Select LEFT(Nazvanie,1) As PerV_BV, Count(Nazvanie) AS Kol_Stran From
+Tabl_Kontinent$
+Group by Left(Nazvanie, 1) Order by PerV_BV
+
+--Вывести список континентов, где плотность население больше, чем 100 чел на кв м
+Select Kontinent,
+AVG(CAST(KolNas As FLOAT)/PL) As SR_Plotn from Tabl_Kontinent$
+Group by Kontinent
+Having
+AVG(CAST(KolNas As FLOAT) / PL) >100
+
+-- Ожидается,  что  через  25  лет  население  Европы  и  Азии  вырастет  на  20%, 
+--Северной Америки и Африки на 50%, а остальных частей мира – на 70%. Вывести список 
+--континентов с прогнозируемым населением
+select Kontinent, CASE
+When Kontinent in ('Европа', 'Азия') Then FLOOR(Sum(KolNas)*1.2)
+When Kontinent in ('Северная Америка','Африка') Then FLOOR(SUM(KolNas)*1.5)
+else FLOOR(SUM(KolNas)*1.7)
+end
+as sum_Nas
+from Tabl_Kontinent$
+Group by Kontinent
+
+--Вывести  список  континентов,  где  разница  по  населению  между  наибольшими  и 
+--наименьшими странами не более в 1000 раз
+select Kontinent
+from Tabl_Kontinent
+Group by Kontinent
+Having MAx(KolNas)<=1000*Min(KolNas)
+
+--Вывести количество стран, у которых нет столицы (не введена в базу)
+select count(*) as KolNas
+from Tabl_Kontinent$
+where Stolica is null
+
+-- Вывести количество символов в самых длинных и коротких названиях стран и столиц 
+--Использовать строковую функцию LEN(строка)  возвращает количество символов в заданной 
+--строке
+select
+max(len(Nazvanie)) as DL_Nazvanie,
+max(len(Stolica)) as DL_Stolica,
+Min(len(Nazvanie)) as KR_Nazvanie,
+min(len(Stolica)) as KR_Nazvanie
+from Tabl_Kontinent$
+
+--Вывести список континентов, у которых средняя плотность среди стран с площадью 
+--более 1 млн. кв. км больше, чем 10  чел. на кв. км. Результат отсортировать по плотности по 
+--убыванию.
+select Kontinent, avg(cast(KolNas as FLOAT) / Pl) as Plotn
+from Tabl_Kontinent$
+where Pl > 1000000
+Group by Kontinent
+Having Avg(cast(KolNas as float) / Pl) > 10
+Order by Plotn Desc
+
+--Вывести минимальную площадь стран.
+select Min(Pl) as min_Pl from Tabl_Kontinent$;
+
+--Вывести наибольшую по населению страну в Северной и Южной Америке.  
+Select Nazvanie from Tabl_Kontinent$
+where Kontinent='Северная Америка' Or 'Южная Америка'
+having min(KolNas)
+
+--Вывести среднее население стран. Результат округлить до одного знака.  
+select ROUND(avg(cast(KolNas as float)), 1) As SR_KolNas from Tabl_Kontinent$
+
+--Вывести количество стран, у которых название заканчивается на «ан», кроме стран, 
+--у которых название заканчивается на «стан».  
+select count(*) as Kol
+from Tabl_Kontinent$
+where Right(Nazvanie, 2)='ан' and Right(Nazvanie, 4) !='стан';
+
+--Вывести количество континентов, где есть страны, название которых начинается с 
+--буквы «Р».  
+select Count(Distinct(Kontinent)) as Kol from Tabl_Kontinent
+where Left(Nazvanie, 1) ='Р';
+
+--Сколько раз страна с наибольшей площадью больше, чем страна с наименьшей 
+--площадью?  
+select avg(cast(max(Pl) as float) / cast(min(Pl) as float)) as Razn
+from Tabl_Kontinent$
+
+--Вывести  количество  стран  с  населением  больше,  чем  100  млн.  чел.  на  каждом 
+--континенте. Результат отсортировать по количеству стран по возрастанию.
+select Kontinent, count(Nazvanie) as Kol_stran From Tabl_Kontinent$
+Group by Kontinent
+where KolNas > 100000000
+ORDER by Kol_stran  
+
+--Вывести количество стран по количеству букв в названии. Результат отсортировать 
+--по убыванию.
+Select len(Nazvanie) as DL_Nazvanie, Count(Nazvanie) as Kol_Stran
+from Tabl_Kontinent$
+Group by len(Nazvanie)
+order by DL_Nazvanie Desc  
+
+--Ожидается, что через 20 лет население мира вырастет на 10%.  Вывести список 
+--континентов с прогнозируемым населением:
+select Kontinent, FLOOR(Sum(KolNas)*1.5) as sum_Nas
+from Tabl_Kontinent$
+Group by Kontinent  
+
+--Вывести  список  континентов,  где  разница  по  площади  между  наибольшими  и 
+--наименьшими странами не более в 10000 раз: 
+select Kontinent from Tabl_Kontinent$
+Group by Kontinent
+having max(Pl) <=10000 * min(Pl) 
+
+--Вывести среднюю длину названий Африканских стран.
+select avg(cast(len(Nazvanie) as float) / count(Nazvanie)) as SR_dl
+from Tabl_Kontinent$
+where Kontinent='Африка'  
+
+--Вывести  список  континентов,  у  которых  средняя  плотность  среди  стран  с 
+--населением более 1 млн. чел. больше, чем 30 чел. на кв. км.
+select Kontinent, avg(cast(KolNas as float) / Pl) as Plotn
+from Tabl_Kontinent$
+where KolNas > 1000000
+Group by Kontinent
+Having avg(cast(KolNas as float) / Pl) > 30

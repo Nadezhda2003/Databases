@@ -1,0 +1,34 @@
+use TestBD1
+Create table TestTable1
+(
+    iId int Default 1,
+    CONSTRAINT ckeck_iId CHECK(iId is not null)
+)
+
+insert into TestTable1
+Values(10)
+
+update TestTable1
+set iId=Null
+
+--Ограничение CHECK
+use TestBD1
+Create table TestTable2
+(
+    id int Default 1 not null,
+    vcName VARCHAR(50) Not null,
+    dBirthDate datetime,
+    CONSTRAINT Ck_birthdate
+    Check (dBirthDate >'01-01-1900' AND dBirthDate < getdate())
+)
+
+use TestBD1
+Create table TestTable4
+(
+    id int Default 1 not null,
+    vcName VARCHAR(50) Not null,
+    dBirthDate datetime,
+    dDocDate datetime,
+    CONSTRAINT Ck_birthdate
+    Check (dDocDate>dBirthDate And dBirthDate<getdate())
+)
