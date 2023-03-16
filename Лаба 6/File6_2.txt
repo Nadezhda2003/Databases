@@ -29,6 +29,6 @@ Create table TestTable4
     vcName VARCHAR(50) Not null,
     dBirthDate datetime,
     dDocDate datetime,
-    CONSTRAINT Ck_birthdate
+    CONSTRAINT Ck_Birth_date
     Check (dDocDate>dBirthDate And dBirthDate<getdate())
 )
