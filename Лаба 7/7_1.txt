@@ -1,0 +1,72 @@
+use Ucheb_6_Bazhanova
+Create table School
+(
+    Id int CONSTRAINT PK_School_Id Primary Key Identity,
+    fio NVARCHAR(20) Not null,
+    predmet NVARCHAR(20) Not null,
+    ush NVARCHAR(20) Not null,
+    ball float Default 0
+)
+insert into School Values
+("Иванова", "математика","лицей",98,5),
+("Петров","физика","лицей",99),
+("Сидоров","математика","лицей",88),
+("Полухина","физика","гимназия",78),
+("Матвеева","химия","лицей",92),
+("Касимов","химия","гимназия",68),
+("Нестеров","математика","гимназия",81),
+("Авдеев","физика","лицей",87),
+("Никитина","химия","лицей",94),
+("Барышев","химия","лицей",88)
+
+--1.1
+select predmet, ush, Count(fio) as Kol
+From School
+group by predmet, ush
+
+--1.2
+select predmet, ush, count(fio) as Kol
+from School
+group by predmet, ush WITH ROLLUP
+
+--2.1
+select predmet, ush, count(fio) as Kol
+from School
+group by predmet, ush
+
+--2.2
+select predmet, ush, count(fio) as Kol
+from School
+group by predmet, ush with cube
+
+--3
+select predmet, ush, count(fio) as Kol
+from School
+group by grouping sets(predmet, ush)
+
+--4
+select COALESCE(predmet, 'ИТОГО') as predmet,
+COALESCE(ush, 'Итого') as ush
+, count(fio) as Kol
+from School
+group by ROLLUP(predmet, ush)
+
+--5
+select IIF(grouping(predmet)=1, 'ИТОГО', predmet) as predmet,
+IIF(grouping(ush)=1, 'Итого', ush) as ush,
+count(fio) as Kol
+from School
+group by cube(predmet, ush)
+
+--6
+select case GROUPING_ID(predmet, ush)
+when 1 then 'Итого по предметам'
+when 3 then 'Итого'
+else ''
+end as Итого,
+ISNULL(predmet,'') as predmet,
+ISNULL(ush,'') as ush,
+count(fio) as Kol
+from School
+group by ROLLUP(predmet, ush)
+
