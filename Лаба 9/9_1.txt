@@ -1,0 +1,86 @@
+--2.1.1
+use Ucheb_6_Bazhanova
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where PL > 1000000 union
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where KolNas > 100000000
+
+--2.1.2
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where PL>1000000
+union all
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where KolNas > 100000000
+
+--2.1.3
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where Kontinent='Европа' and
+cast(KolNas as float) /PL >400
+union select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where Kontinent='Азия' and
+cast(KolNas as float)/PL >300
+union select Nazvanie, Stolica, KolNas, Kontinent
+from Tabl_Kontinent$
+where Kontinent='Африка' and
+cast(KolNas as float)/PL>200
+order by Kontinent
+
+--2.1.4
+
+Select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where PL>1000000
+except
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where KolNas > 1000000
+
+--2.1.5
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where PL>1000000
+intersect
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where KolNas > 100000000
+
+--1 Вывести объединенный результат выполнения запросов, которые выбирают 
+-- страны с площадью меньше 500 кв. км и с площадью больше 5 млн. кв. км  
+
+use Ucheb_6_Bazhanova
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where PL < 500
+union
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where PL > 5000000
+
+--2.  Вывести список стран с площадью больше 1 млн. кв. км, исключить страны с 
+--населением меньше 100 млн. чел.
+
+Select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where PL>1000000
+except
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where KolNas < 100000000
+
+--3.  Вывести список стран с площадью меньше 500 кв. км и с населением меньше 
+--100 тыс. чел.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where PL < 500
+intersect
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where KolNas < 100000
