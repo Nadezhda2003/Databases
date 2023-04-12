@@ -95,7 +95,10 @@ where P.Shifr_Spez='ис'
 -- непосредственного руководителя. Для заведующих кафедрами поле руководителя
 -- оставить пустым.
 select
-S.FIO, S.Dolgn, S.Zarplata, p.FIO as Руководитель
+S.FIO,
+case S.Dolgn when 'зав.кафедрой' then NULL
+else P.FIO
+as Руководитель
 from Sotrudnik S
 Inner join Sotrudnik P on S.TabNom = p.TabNom_ruk
 
@@ -121,15 +124,23 @@ group by S.fio
 -- студента только для тех студентов, у которых средний балл не меньше заданного
 -- (например, 4).
 
+select S.Reg_Nom, S.Fio_stud,
+count(O.Ozenk_a) as [Количество экзаменов],
+avg(O.Ozenk_a) as [Средний балл]
+from Student S
+Inner join Ozenka O on S.Reg_Nom = O.ReGNom
+group by S.Fio_stud
+having avg(O.Ozenk_a)>=4
+
 --7 Вывести список заведующих кафедрами и их зарплаты, и степень.
 select S.FIO, S.Zarplata, P.Stepen
 from Sotrudnik S Inner join Prepodavatel P on S.TabNom=P.TabNom_Pr
 Where S.Dolgn='зав.кафедрой'
 
 --8 Вывести список профессоров.
-select S.FIO, P.Stepen
+select S.FIO
 from Sotrudnik S Inner join Prepodavatel P on S.TabNom=P.TabNom_Pr
-Where P.Stepen='профессор'
+Where P.Zvanie='профессор'
 
 --9 Вывести название дисциплины, фамилию, должность и степень
 -- преподавателя, дату и место проведения экзаменов в хронологическом порядке в
@@ -140,8 +151,8 @@ from Ozenka O
 Inner join Predmet Pr on O.Kod = Pr.kod_pred
 Inner join Sotrudnik S on O.Tab_Nom = S.Tab_Nom
 Inner join Prepodavatel P on O.Tab_Nom = P.TabNom_Pr
-order by O.data
 where O.data between '2022-06-05' and '2022-06-10'
+order by O.data
 
 --10 Вывести фамилию преподавателей, принявших более трех экзаменов.
 select S.fio, count(O.data) as [Количество экзаменов]
@@ -155,4 +166,4 @@ select
 S.Fio_stud
 from Student S
 left outer join Ozenka O on S.Reg_Nom=O.ReGNom
-where O.data = '2022-06-05'
+where O.data = '2022-06-05' and O.ReGNom is null
