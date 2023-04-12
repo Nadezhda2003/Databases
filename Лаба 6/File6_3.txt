@@ -7,7 +7,7 @@ Create table Tabl_Kontinent$
     KolNas int not null,
     Kontinent VARCHAR(20) Not null
 )
-isert into Tabl_Kontinent$ Values
+insert into Tabl_Kontinent$ Values
 ('Австрия','Вена',83858,8741753,'Европа'),
 ('Азербайджан','Баку', 86600,9705600,'Азия'),
 ('Албания','Тирана',28748,2866026,'Европа'),
@@ -42,7 +42,7 @@ Where Kontinent = 'Африка';
 
 --Вывести суммарное население стран Северной и Южной Америки
 select SUM(KolNas) As sum_KolNas From Tabl_Kontinent$
-Where Kontinent = 'Северная Америка' Or 'Южная Америка';
+Where Kontinent = 'Северная Америка' Or Kontinent = 'Южная Америка';
 
 --Вывести среднее население стран, кроме европейских. Результат
 --округлить до двух знаков
@@ -95,9 +95,9 @@ Group by Kontinent
 --Вывести  список  континентов,  где  разница  по  населению  между  наибольшими  и 
 --наименьшими странами не более в 1000 раз
 select Kontinent
-from Tabl_Kontinent
+from Tabl_Kontinent$
 Group by Kontinent
-Having MAx(KolNas)<=1000*Min(KolNas)
+Having cast(Max(KolNas) as float)<=1000 * cast(Min(KolNas) as float)
 
 --Вывести количество стран, у которых нет столицы (не введена в базу)
 select count(*) as KolNas
@@ -129,8 +129,7 @@ select Min(Pl) as min_Pl from Tabl_Kontinent$;
 
 --Вывести наибольшую по населению страну в Северной и Южной Америке.  
 Select Nazvanie from Tabl_Kontinent$
-where Kontinent='Северная Америка' Or 'Южная Америка'
-having min(KolNas)
+where (Kontinent='Северная Америка' Or Kontinent = 'Южная Америка') and KolNas = (select max(KolNas) from Tabl_Kontinent$)
 
 --Вывести среднее население стран. Результат округлить до одного знака.  
 select ROUND(avg(cast(KolNas as float)), 1) As SR_KolNas from Tabl_Kontinent$
@@ -139,23 +138,23 @@ select ROUND(avg(cast(KolNas as float)), 1) As SR_KolNas from Tabl_Kontinent$
 --у которых название заканчивается на «стан».  
 select count(*) as Kol
 from Tabl_Kontinent$
-where Right(Nazvanie, 2)='ан' and Right(Nazvanie, 4) !='стан';
+where Right(Nazvanie, 2)='ан' and Right(Nazvanie, 4) != 'стан';
 
 --Вывести количество континентов, где есть страны, название которых начинается с 
 --буквы «Р».  
-select Count(Distinct(Kontinent)) as Kol from Tabl_Kontinent
+select Count(Distinct Kontinent) as Kol from Tabl_Kontinent$
 where Left(Nazvanie, 1) ='Р';
 
 --Сколько раз страна с наибольшей площадью больше, чем страна с наименьшей 
 --площадью?  
-select avg(cast(max(Pl) as float) / cast(min(Pl) as float)) as Razn
+select cast(max(Pl) as float) / cast(min(Pl) as float) as Razn
 from Tabl_Kontinent$
 
 --Вывести  количество  стран  с  населением  больше,  чем  100  млн.  чел.  на  каждом 
 --континенте. Результат отсортировать по количеству стран по возрастанию.
 select Kontinent, count(Nazvanie) as Kol_stran From Tabl_Kontinent$
-Group by Kontinent
 where KolNas > 100000000
+Group by Kontinent
 ORDER by Kol_stran  
 
 --Вывести количество стран по количеству букв в названии. Результат отсортировать 
@@ -167,7 +166,7 @@ order by DL_Nazvanie Desc
 
 --Ожидается, что через 20 лет население мира вырастет на 10%.  Вывести список 
 --континентов с прогнозируемым населением:
-select Kontinent, FLOOR(Sum(KolNas)*1.5) as sum_Nas
+select Kontinent, FLOOR(Sum(KolNas)*1.1) as sum_Nas
 from Tabl_Kontinent$
 Group by Kontinent  
 
@@ -175,12 +174,12 @@ Group by Kontinent
 --наименьшими странами не более в 10000 раз: 
 select Kontinent from Tabl_Kontinent$
 Group by Kontinent
-having max(Pl) <=10000 * min(Pl) 
+having cast(max(Pl) as float) <=10000 * cast(min(Pl) as float)
 
 --Вывести среднюю длину названий Африканских стран.
-select avg(cast(len(Nazvanie) as float) / count(Nazvanie)) as SR_dl
+select cast(SUM(len(Nazvanie)) as float) / count(Nazvanie) as SR_dl
 from Tabl_Kontinent$
-where Kontinent='Африка'  
+where Kontinent='Африка'
 
 --Вывести  список  континентов,  у  которых  средняя  плотность  среди  стран  с 
 --населением более 1 млн. чел. больше, чем 30 чел. на кв. км.

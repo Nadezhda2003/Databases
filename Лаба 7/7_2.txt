@@ -1,0 +1,85 @@
+use Ucheb_6_Bazhanova
+
+--1
+select 'Количество' as [Количество учеников по предметам], математика, физика, химия
+from
+(
+select predmet, fio from School
+) as SOURCE_TABLE
+PIVOT (
+count(fio)  for predmet in (математика, физика, химия)
+) AS PIVOT_TABLE
+
+--2
+select ush, математика, физика, химия
+from
+(
+	select ush, predmet, fio from School
+) as SOURCE_TABLE
+PIVOT (
+count(fio)  for predmet in (математика, физика, химия)
+) AS PIVOT_TABLE
+
+--3
+use Ucheb_6_Bazhanova
+select fio, [Предмет или школа] from School
+UNPIVOT (
+[Предмет или школа] for Значение in (ush, predmet)) unpvt
+
+--4
+select 'Средний балл' as [Средний балл по школам], гимназия, лицей
+from
+(
+select ush, ball from School
+) as SOURCE_TABLE
+PIVOT (
+avg(ball)  for ush in (гимназия, лицей)
+) AS PIVOT_TABLE
+
+--5
+use Ucheb_6_Bazhanova
+select predmet, гимназия, лицей
+from
+(
+	select ush, predmet, ball from School
+) as SOURCE_TABLE
+PIVOT (
+avg(ball)  for ush in (гимназия, лицей)
+) AS PIVOT_TABLE
+
+--6
+use Ucheb_6_Bazhanova
+select [Предмет или школа, или фамилия] from School
+UNPIVOT (
+[Предмет или школа, или фамилия] for Значение in (ush, predmet, fio)) unpvt
+
+use Ucheb_6_Bazhanova
+CREATE TABLE test_table_pivot(
+ fio varchar(50) NULL,
+ god int NULL,
+ summa float NULL
+)
+insert into test_table_pivot Values
+('Иванов И. И.', 2011, 200.0),
+('Иванов И. И.', 2011, 500.0),
+('Иванов И. И.', 2012, 300.0),
+('Иванов И. И.', 2012, 600.0),
+('Иванов И. И.', 2013, 900.0),
+('Иванов И. И.', 2014, 500.0),
+('Иванов И. И.', 2014, 300.0),
+('Иванов И. И.', 2015, 100.0),
+('Петров П. П.', 2011, 100.0),
+('Петров П. П.', 2012, 200.0),
+('Петров П. П.', 2012, 300.0),
+('Петров П. П.', 2013, 100.0),
+('Петров П. П.', 2014, 300.0),
+('Петров П. П.', 2014, 100.0),
+('Сидоров С. С.', 2012, 100.0),
+('Сидоров С. С.', 2013, 1000.0),
+('Сидоров С. С.', 2014, 500.0),
+('Сидоров С. С.', 2014, 300.0),
+('Сидоров С. С.', 2015, 300.0)
+
+select fio, [2011], [2012], [2013], [2014],[2015]
+from test_table_pivot
+PIVOT (sum(summa) for god in ([2011], [2012], [2013], [2014],[2015])) as test_pivot

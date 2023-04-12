@@ -1,14 +1,14 @@
 --1
 use vuz
 select F.Nfak As Fakultet,
-K.Nfak As Kafedra from
+K.NKaf As Kafedra from
 Fakultet F, Kafedra K Where
 F.ABfak = K.AbFak_Kaf
-oder by Fakultet, Kafedra
+order by Fakultet, Kafedra
 
 --2
 select F.Nfak as Fakultet,
-K.Nfak as Kafedra
+K.NKaf as Kafedra
 from Fakultet F Inner join Kafedra K on
 F.ABfak=K.AbFak_Kaf
 order by Fakultet, Kafedra
@@ -16,7 +16,7 @@ order by Fakultet, Kafedra
 --3
 select
 F.Nfak as Fakultet,
-K.Nfak as Kafedra
+K.NKaf as Kafedra
 from
 Fakultet F
 Left outer join Kafedra K on
@@ -62,7 +62,7 @@ select distinct Pr.Predmet as Дисциплина,
 S.FIO, S.Dolgn, P.Stepen, O.data, O.Auditoria
 from Ozenka O
 Inner join Predmet Pr on O.Kod = Pr.kod_pred
-Inner join Sotrudnik S on O.Tab_Nom = S.Tab_Nom
+Inner join Sotrudnik S on O.Tab_Nom = S.TabNom
 Inner join Prepodavatel P on O.Tab_Nom = P.TabNom_Pr
 order by O.data
 
@@ -95,20 +95,18 @@ where P.Shifr_Spez='ис'
 -- непосредственного руководителя. Для заведующих кафедрами поле руководителя
 -- оставить пустым.
 select
-S.TabNom, S.FIO, 
-if S.Dolgn ='зав.кафедрой'
-then null
+S.FIO,
+case S.Dolgn when 'зав.кафедрой' then NULL
 else P.FIO
-end if; as Руководитель
+as Руководитель
 from Sotrudnik S
-Inner join Sotrudnik P on S.TabNom = P.TabNom_ruk
+Inner join Sotrudnik P on S.TabNom = p.TabNom_ruk
 
 --3 Вывести список студентов, сдавших минимум два экзамена.
-select
-S.Fio_stud
-from Student S
-left outer join Ozenka O on S.Reg_Nom=O.ReGNom
-where O.ReGNom >= 2
+select S.fio, count(O.data) as [Количество экзаменов]
+from Ozenka O Inner join Sotrudnik S on O.Tab_Nom=S.TabNom
+group by S.fio
+having count(O.data)>= 2
 
 --4 Вывести список инженеров с зарплатой, меньшей 2000 руб.
 select S.FIO
@@ -119,21 +117,30 @@ where S.Zarplata < 2000
 select S.fio
 from Ozenka O Inner join Sotrudnik S on O.Tab_Nom = S.TabNom
 where O.Auditoria = 'т505'
+group by S.fio
 
 --6 Вывести из таблиц «Студент» и «Экзамен» учетные номера и фамилии
 -- студентов, а также количество сданных экзаменов и средний балл для каждого
 -- студента только для тех студентов, у которых средний балл не меньше заданного
 -- (например, 4).
 
+select S.Reg_Nom, S.Fio_stud,
+count(O.Ozenk_a) as [Количество экзаменов],
+avg(O.Ozenk_a) as [Средний балл]
+from Student S
+Inner join Ozenka O on S.Reg_Nom = O.ReGNom
+group by S.Fio_stud
+having avg(O.Ozenk_a)>=4
+
 --7 Вывести список заведующих кафедрами и их зарплаты, и степень.
 select S.FIO, S.Zarplata, P.Stepen
 from Sotrudnik S Inner join Prepodavatel P on S.TabNom=P.TabNom_Pr
-Where P.Dolgn='зав.кафедрой'
+Where S.Dolgn='зав.кафедрой'
 
 --8 Вывести список профессоров.
-select S.FIO, P.Stepen
+select S.FIO
 from Sotrudnik S Inner join Prepodavatel P on S.TabNom=P.TabNom_Pr
-Where P.Stepen='профессор'
+Where P.Zvanie='профессор'
 
 --9 Вывести название дисциплины, фамилию, должность и степень
 -- преподавателя, дату и место проведения экзаменов в хронологическом порядке в
@@ -144,8 +151,8 @@ from Ozenka O
 Inner join Predmet Pr on O.Kod = Pr.kod_pred
 Inner join Sotrudnik S on O.Tab_Nom = S.Tab_Nom
 Inner join Prepodavatel P on O.Tab_Nom = P.TabNom_Pr
-order by O.data
 where O.data between '2022-06-05' and '2022-06-10'
+order by O.data
 
 --10 Вывести фамилию преподавателей, принявших более трех экзаменов.
 select S.fio, count(O.data) as [Количество экзаменов]
@@ -159,4 +166,4 @@ select
 S.Fio_stud
 from Student S
 left outer join Ozenka O on S.Reg_Nom=O.ReGNom
-where O.data = '2022-06-05'
+where O.data = '2022-06-05' and O.ReGNom is null
