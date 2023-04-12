@@ -1,0 +1,243 @@
+--1
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent, round(cast(KolNas as float) * 100 /
+(
+    select sum(KolNas) from Tabl_Kontinent$
+), 3) as Процент
+from Tabl_Kontinent$
+order by Процент Desc
+
+--2
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where KolNas > (select avg(KolNas) from Tabl_Kontinent$)
+
+--3
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from (select Nazvanie, Stolica, PL, KolNas, Kontinent from Tabl_Kontinent$
+where Nazvanie='Африка') A
+where KolNas > 50000000
+
+--4
+select Nazvanie, Stolica, PL, KolNas, Kontinent, round(cast(KolNas as float) * 100 /
+(
+    select sum(KolNas) from Tabl_Kontinent$
+    where A.Kontinent = Б.Kontinent
+), 3) as Процент
+from Tabl_Kontinent$ A
+order by Процент Desc
+
+--5
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ A where
+KolNas > (
+    select avg(KolNas) from Tabl_Kontinent$ Б
+    where Б.Kontinent = A.Kontinent
+)
+
+--6
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent in (
+    select Kontinent from Tabl_Kontinent$
+    Group by
+    Kontinent having
+    avg(KolNas) > (
+        select avg(KolNas)
+        from Tabl_Kontinent$
+    )
+)
+
+--7
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent ='Азия'
+and KolNas > all (
+    select KolNas
+    from Tabl_Kontinent$
+    where Kontinent = 'Европа'
+)
+
+--8
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent ='Европа'
+and KolNas > any (
+    select KolNas
+    from Tabl_Kontinent$
+    where Kontinent = 'Южная Америка'
+)
+
+--9
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent ='Африка'
+and exists (
+    select *
+    from Tabl_Kontinent$
+    where Kontinent = 'Африка'
+    and KolNas > 100000000
+)
+
+--10
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent = (
+    select Kontinent
+    from Tabl_Kontinent$
+    where Nazvanie = 'Ангола'
+)
+
+--11
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+KolNas !> (
+    select KolNas
+    from Tabl_Kontinent$
+    where Nazvanie = 'Ангола'
+)
+
+--12
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+KolNas = (
+    select max(Мин_Нас)
+    from (
+        select min(KolNas) as Мин_Нас
+        from Tabl_Kontinent$
+        Group by Kontinent
+    ) A
+)
+
+-- 1. Вывести список стран и процентное соотношение площади каждой из 
+--них к общей площади всех стран мира.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent, round(cast(PL as float) * 100 /
+(
+    select sum(PL) from Tabl_Kontinent$
+), 3) as Процент
+from Tabl_Kontinent$
+order by Процент Desc
+
+--2. Вывести список стран мира, плотность населения которых больше, чем 
+--средняя плотность населения всех стран мира.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$
+where PL > (select avg(PL) from Tabl_Kontinent$)
+
+--3. С помощью подзапроса вывести список европейских стран, население 
+--которых меньше 5 млн. чел.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from (select Nazvanie, Stolica, PL, KolNas, Kontinent from Tabl_Kontinent$
+where Nazvanie='Европа') A
+where KolNas < 5000000
+
+--4. Вывести  список  стран  и  процентное  соотношение  их  площади  к 
+--суммарной площади той части мира, где они находятся.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent, round(cast(PL as float) * 100 /
+(
+    select sum(PL) from Tabl_Kontinent$
+    where A.Kontinent = Б.Kontinent
+), 3) as Процент
+from Tabl_Kontinent$ A
+order by Процент Desc
+
+--5. Вывести  список  стран  мира,  площадь  которых  больше,  чем  средняя 
+--площадь стран той части света, где они находятся.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ A where
+PL > (
+    select avg(PL) from Tabl_Kontinent$ Б
+    where Б.Kontinent = A.Kontinent
+)
+
+--6. Вывести  список  стран  мира,  которые  находятся  в  тех  частях  света, 
+--средняя плотность населения которых превышает общемировую.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent in (
+    select Kontinent from Tabl_Kontinent$
+    Group by
+    Kontinent having
+    avg(cast(KolNas as float) / PL) > (
+        select avg(cast(KolNas as float) / PL)
+        from Tabl_Kontinent$
+    )
+)
+
+--7. Вывести  список  южноамериканских  стран,  в  которых  живет  больше 
+--людей, чем в любой африканской стране.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent ='Южная Америка'
+and KolNas > all (
+    select KolNas
+    from Tabl_Kontinent$
+    where Kontinent = 'Африка'
+)
+
+--8. Вывести список африканских стран, в которых живет больше людей, 
+--чем хотя бы в одной южноамериканской стране.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent ='Африка'
+and KolNas > any (
+    select KolNas
+    from Tabl_Kontinent$
+    where Kontinent = 'Южная Америка'
+)
+
+--9. Если в Африке есть хотя бы одна страна, площадь которой больше 2 
+--млн. кв. км, вывести список всех африканских стран.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent ='Африка'
+and exists (
+    select *
+    from Tabl_Kontinent$
+    where Kontinent = 'Африка'
+    and PL > 2000000
+)
+
+--10. Вывести список стран той части света, где находится страна «Фиджи».
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+Kontinent = (
+    select Kontinent
+    from Tabl_Kontinent$
+    where Nazvanie = 'Фиджи'
+)
+
+--11. Вывести  список  стран,  население  которых  не  превышает  население 
+--страны «Фиджи».
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+KolNas !> (
+    select KolNas
+    from Tabl_Kontinent$
+    where Nazvanie = 'Фиджи'
+)
+
+--12. Вывести  название  страны  с  наибольшим  населением  среди  стран  с 
+--наименьшей площадью на каждом континенте.
+
+select Nazvanie, Stolica, PL, KolNas, Kontinent
+from Tabl_Kontinent$ where
+PL = (
+    select max(Мин_Пл)
+    from (
+        select min(PL) as Мин_Пл
+        from Tabl_Kontinent$
+        Group by Kontinent
+    ) A
+)
