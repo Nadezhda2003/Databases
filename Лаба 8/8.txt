@@ -98,7 +98,7 @@ select
 S.FIO,
 case S.Dolgn when 'зав.кафедрой' then NULL
 else P.FIO
-as Руководитель
+end as Руководитель
 from Sotrudnik S
 Inner join Sotrudnik P on S.TabNom = p.TabNom_ruk
 
