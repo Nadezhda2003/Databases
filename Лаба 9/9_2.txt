@@ -1,5 +1,5 @@
 --1
-
+use Ucheb_6_Bazhanova
 select Nazvanie, Stolica, PL, KolNas, Kontinent, round(cast(KolNas as float) * 100 /
 (
     select sum(KolNas) from Tabl_Kontinent$
@@ -21,7 +21,7 @@ where KolNas > 50000000
 --4
 select Nazvanie, Stolica, PL, KolNas, Kontinent, round(cast(KolNas as float) * 100 /
 (
-    select sum(KolNas) from Tabl_Kontinent$
+    select sum(KolNas) from Tabl_Kontinent$ Б
     where A.Kontinent = Б.Kontinent
 ), 3) as Процент
 from Tabl_Kontinent$ A
@@ -124,7 +124,7 @@ order by Процент Desc
 
 select Nazvanie, Stolica, PL, KolNas, Kontinent
 from Tabl_Kontinent$
-where PL > (select avg(PL) from Tabl_Kontinent$)
+where cast(KolNas as float)/PL > (select avg(cast(KolNas as float)/PL) from Tabl_Kontinent$)
 
 --3. С помощью подзапроса вывести список европейских стран, население 
 --которых меньше 5 млн. чел.
@@ -139,7 +139,7 @@ where KolNas < 5000000
 
 select Nazvanie, Stolica, PL, KolNas, Kontinent, round(cast(PL as float) * 100 /
 (
-    select sum(PL) from Tabl_Kontinent$
+    select sum(PL) from Tabl_Kontinent$ Б
     where A.Kontinent = Б.Kontinent
 ), 3) as Процент
 from Tabl_Kontinent$ A
