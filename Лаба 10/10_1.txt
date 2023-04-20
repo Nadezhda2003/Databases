@@ -1,3 +1,4 @@
+use Ucheb_6_Bazhanova
 --1
 declare @a int, @b int, @c int
 set @a=5
@@ -5,6 +6,7 @@ set @b=10
 set @c=@a+@b print @c
 
 --2
+use Ucheb_6_Bazhanova
 declare @licey float, @gimn float, @diff float
 set @licey = (select max(ball) from School
 where ush='лицей')
@@ -14,6 +16,7 @@ set @diff = abs(@licey-@gimn)
 print @diff
 
 --3
+use Ucheb_6_Bazhanova
 declare @maxp float, @minp float, @diff float
 select
 @maxp=max(ball),
@@ -84,7 +87,7 @@ end
 
 --11
 declare @a7 int = rand()*5, @c7 int =1
-declare @b7 int @a7+rand()*5
+declare @b7 int = @a7+rand()*5
 print '@a7 = ' + cast(@a7 as char(1)) + ', @b7 = ' + cast(@b7 as char(1))
 while @a7<=@b7
 begin
@@ -114,6 +117,7 @@ set @m = case
 when @d=1 and @m=12 then 1
 when @d=1 and @m<12 then @m+1
 else @m
+end
 print cast(@d as varchar(2))+'/'+cast(@m as varchar(2))
 
 --14
@@ -149,6 +153,7 @@ set @c=@a*@b print @c
 
 --2.  В таблице «Ученики» найти разницу между средними баллами лицеистов и 
 --гимназистов.
+use Ucheb_6_Bazhanova
 declare @licey float, @gimn float, @diff float
 set @licey = (select avg(ball) from School
 where ush='лицей')
@@ -166,27 +171,30 @@ print cast(@c as varchar(3)) + ' нечетное'
 
 --4.  Дано четырехзначное число. Вывести сумму его цифр.
 declare @x int = rand()*1000
+print @x
 declare @a int = @x % 10
 declare @b int = @x / 10 % 10
 declare @c int = @x / 100 % 10
-declare @d int = @x//1000
+declare @d int = @x/1000
 print (@a + @b + @c + @d)
 
 --5.  Даны случайные целые числа a, b и c. Найти наименьшее из них.
 declare @a2 int=rand()*100, @b2 int = rand()*100, @c2 int =rand()*100
-if @a2 > @b2
+print '@a2 = '+cast(@a2 as varchar(3)) +' @b2 = '+cast(@b2 as varchar(3)) +' @c2 = '+cast(@c2 as varchar(3))
+if @a2 < @b2
  begin 
- if @a2 > @c2
+ if @a2 < @c2
     print '@a2 = ' + cast(@a2 as varchar(3))
  else
     print '@c2 = ' + cast(@c2 as varchar(3))
 end
 else
 begin 
- if @b2 > @c2
+ if @b2 < @c2
     print '@b2 = ' + cast(@b2 as varchar(3))
  else
     print '@c2 = ' + cast(@c2 as varchar(3))
+end
 
 --6.  Дано случайное целое число a. Проверить, делится ли данное число на 11.
 declare @a3 int=rand()*100
@@ -216,24 +224,18 @@ if @a5 >@b5
 set @a5 = @a5 % @b5 else
 set @b5 = @b5%@a5
 end
-print 'Нод = ' + cast ((@m /(@a5+@b5) as int) as varchar(4))
+print 'Нок = ' + cast ((@m /(@a5+@b5)) as varchar(8000))
 
-m = a * b
-    while a != 0 and b != 0:
-        if a > b:
-            a %= b
-        else:
-            b %= a
-    return m // (a + b)
 
 --9.  Даны два целых числа A и B (A<B). Найти сумму квадратов всех целых чисел от A до 
 --B включительно.
 declare @a7 int = rand()*5, @c7 int = 0
-declare @b7 int @a7+rand()*5
+declare @b7 int = @a7+rand()*5
+print '@a7 = '+cast(@a7 as varchar(3)) +' @b7 = '+cast(@b7 as varchar(3))
 while @a7 <=@b7
 begin
-@c7 = @c7 + square(@a7)
-@a7=@a7+1
+set @c7 = @c7 + square(@a7)
+set @a7=@a7+1
 end
 print 'Sum = ' + cast(@c7 as varchar(50))
 
@@ -242,10 +244,12 @@ print 'Sum = ' + cast(@c7 as varchar(50))
 declare @i int =0
 while @i < 400
 begin
-if (@i % 7 =0) and (@i % 2 =1) and (@i % 3 =1) and (@i % 4 =1) and (@i % 5 =1) and (@i % 7 =1)
-print @i
+if (@i % 7 =0) and (@i % 2 =1) and (@i % 3 =1) and (@i % 4 =1) and (@i % 5 =1) and (@i % 6 =1)
+begin print @i
+break
+end
 else
-@i=@i+1
+set @i=@i+7
 end
 
 --11.  Вывести свою фамилию на экран столько раз, сколько в нем букв.
