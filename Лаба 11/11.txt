@@ -1,1 +1,123 @@
+--1
+use Ucheb_6_Bazhanova
+go create view PR1
+as
+select Nazvanie, Stolica, PL, KolNas, Kontinent from Tabl_Kontinent$
+where KolNas<5000000 and PL>100000
+go select Nazvanie, Stolica, Pl, KolNas, Kontinent from PR1
 
+--2
+go create view PR2
+(
+Kontinent, Pl, KolNas) as
+select Kontinent, SUM(PL), SUM(KolNas) from Tabl_Kontinent$
+group by Kontinent;
+go select Kontinent, PL, KolNas from PR2
+
+--3
+use vuz
+go create view PR3
+(
+Фамилия, Должность, Звание, Степень, Кафедра, Зарплата
+)
+as select
+Fio, Dolgn, Zvanie, Stepen, NKaf, Zarplata from Sotrudnik C
+inner join Prepodavatel P on C.TabNom = P.TabNom_Pr
+inner join Kafedra K on C.ShifrKaf_Sotr = K.ShifrKaf
+go select Фамилия, Должность, Звание, Степень, Кафедра, Зарплата From PR3
+
+--4
+declare @pr4 Table
+(
+[Номернедели] int,
+[Датаначала] date,
+[Датаконца] date
+)
+declare @t as date, @n int = 1
+set @t = cast(year(getdate()) as char(4)) + '0101'
+while datepart(weekday, @t) >1
+set @t = dateadd(day, -1, @t)
+print datepart(week, @t)
+while year(@t) < year(dateadd(year, 1, getdate()))
+begin
+insert @pr4
+values (@n, @t, dateadd(day, 6, @t))
+set @t = dateadd(day, 7, @t)
+set @n=@n+1
+end
+select [Номернедели],
+[Датаначала],
+[Датаконца] from @pr4
+
+--5
+use Ucheb_6_Bazhanova
+declare @pr5 table
+(
+Название varchar(20),
+Столица varchar(20),
+Площадь int,
+Население int,
+Континент varchar(20)
+)
+insert into @pr5
+select Nazvanie, Stolica, PL, KolNas, Kontinent from Tabl_Kontinent$
+where PL*1000 <(select avg(Pl) from Tabl_Kontinent$)
+select Название, Столица, Площадь, Население, Континент from @pr5
+
+--6
+use vuz
+select datename(month, data) as [Название месяца],
+count(distinct Kod) as [Количество экзаменов],
+count(distinct ReGNom) as [Количество студентов] into
+#pr6
+from Ozenka
+group by DATENAME(month, data)
+select * from #pr6
+
+--7
+use Ucheb_6_Bazhanova
+create table ##PR7
+(
+Название varchar(50),
+Плотность float)
+insert into ##PR7
+(Название, Плотность)
+select Nazvanie, round(Kolnas/PL, 0) as Плотность
+from Tabl_Kontinent$
+select * from ##PR7
+
+--8
+use vuz;
+with СЗК as
+(
+select K.NKaf as Кафедра, K.ShifrKaf,
+avg(Zarplata) as [Средняя зарплата по кафедре] from Sotrudnik C
+inner join Kafedra K on C.ShifrKaf_Sotr = K.ShifrKaf
+group by K.NKaf, K.ShifrKaf
+)
+select C.FIO, C.Zarplata, З.Кафедра, З.[Средняя зарплата по кафедре] from Sotrudnik C
+inner join СЗК З on C.ShifrKaf_Sotr = З.ShifrKaf where
+C.Zarplata < З.[Средняя зарплата по кафедре]
+
+--1
+--2
+--3
+--4
+--5
+--6
+--7
+--8
+use vuz;
+with СЗК as
+(
+select F.NFak as Факультет, F.ABfak, K.ShifrKaf,
+avg(Zarplata) as [Средняя зарплата по факультету] from Sotrudnik C
+inner join Kafedra K on C.ShifrKaf_Sotr = K.ShifrKaf
+inner join Fakultet F on F.ABfak = K.AbFaK_Kaf
+group by F.ABfak, F.NFak
+)
+select C.FIO, C.Zarplata, З.Факультет, З.[Средняя зарплата по факультету] from Sotrudnik C
+inner join СЗК З on C.ShifrKaf_Sotr = З.ShifrKaf where
+C.Zarplata < З.[Средняя зарплата по факультету]
+
+--9
