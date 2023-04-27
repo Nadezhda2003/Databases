@@ -1,4 +1,5 @@
 --1
+use Ucheb_6_Bazhanova
 select FIO, Len(FIO) as Количество_символов
 from Student
 
@@ -118,7 +119,8 @@ end as Знак_зодиака
 from Student
 
 --1.  Вывести список студентов, отсортированный по количеству символов в ФИО.
-Select fio
+Select FIO, len(FIO) as Len
+from Student
 order by len(FIO)
 
 --2.  Вывести список студентов, убрать лишние пробелы в ФИО.
@@ -134,10 +136,11 @@ select FIO, right(spez, 2) as Спец_2
 from Student
 
 --5.  Вывести список студентов, ФИО в формате Фамилия и Инициалы.
-SELECT REGEXP_SUBSTR(FIO, '\w*') ||
-       REGEXP_SUBSTR(FIO, '[[:space:]]\w', 1, 1) || '.' ||
-       REGEXP_SUBSTR(FIO, '[[:space:]]\w', 1, 2) || '.' AS FIO
-  FROM Student
+SELECT    CONCAT( SUBSTRING(FIO,0, CHARINDEX(' ', FIO)+2), 
+     SUBSTRING(SUBSTRING(FIO, CHARINDEX(' ', FIO)+2, LEN(FIO)-CHARINDEX(' ', FIO)-1), CHARINDEX(' ', SUBSTRING(FIO, CHARINDEX(' ', FIO)+2,
+	 LEN(FIO)-CHARINDEX(' ', FIO)-1)), 2))
+as FIO
+FROM Student
 
 --6.  Вывести список специализаций в правильном и обратном виде. Убрать дубликаты.
 Select DISTINCT spez, reverse(spez) as Spez_Обр
@@ -153,17 +156,17 @@ set @l=@l-1
 end
 
 --8.  Вывести абсолютное значение функций с точностью два знака после десятичной запятой.
-select abs(cos(pi()))
-round(abs(square(sin(PI()/2))-(cos(3*pi()/2))), 2) as Значение
+select round(square(sin(PI()/2))-(cos(3*pi()/2)), 2) as Значение
 
 --9.  Вывести количество дней до конца семестра.
 select DateDiff(Day, getdate(),'20230603') as Количество__дней
 
 --10.  Вывести количество месяцев от вашего рождения.
-SELECT MONTHDIFF (getdate(), '2003-10-30') as Количество_прожитых_месяцев
+SELECT datediff(month, getdate(), '2003-10-30') as Количество_прожитых_месяцев
 
 --12.  Вывести список специализаций без повторений. Для каждой специализации вывести «длинный»
 --или «короткий», в зависимости от количества символов. 
-select DISTINCT spez, iif(avg(len(spez)) - len(spez) <= 0, 'короткий','длинный')
+select DISTINCT spez,
+iif(len(spez) <= 10, 'короткий','длинный')
 as Длина_специальности
 from Student
