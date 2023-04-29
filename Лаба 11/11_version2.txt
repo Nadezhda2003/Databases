@@ -157,8 +157,8 @@ declare @pr15 table
 Континент varchar(20)
 )
 insert into @pr15
-select Nazvanie, Stolica, PL, KolNas, Kontinent from Tabl_Kontinent$ B
-where PL < (select avg(Pl) from Tabl_Kontinent$ A group by Kontinent) and A.Kontinent
+select Nazvanie, Stolica, PL, KolNas, Kontinent from Tabl_Kontinent$ A
+where PL < (select avg(Pl) from Tabl_Kontinent$ B where B.Kontinent=A.Kontinent)/100
 select Название, Столица, Площадь, Население, Континент from @pr15
 
 --6
@@ -201,3 +201,7 @@ inner join СЗК З on C.ShifrKaf_Sotr = З.ShifrKaf where
 C.Zarplata < З.[Средняя зарплата по факультету]
 
 --9
+use vuz
+drop view PR1
+drop view PR2
+drop view PR3
