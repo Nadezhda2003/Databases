@@ -52,16 +52,28 @@ SELECT * FROM Doctors_birthdays
 
 
 -- 5. Переименуйте одну из таблиц вашей БД
-
+use Polyclinic
+exec sp_rename 'Doctor', 'List_Doctors'
 
 -- 6. Добавьте по две записи в каждую из таблиц вашей БД
 
 
 -- 7. добавьте по смыслу один столбец
+use TestDatabas;
+Alter Table dbo.Klient_alt
+Add Adress NVARCHAR(50) NULL;
 
+use TestDatabas;
+Alter table dbo.klient_alt
+drop column Phone
 
 -- добавьте ограничение с именем на новый введенный вами столбец
+Alter Table dbo.Zakaz
+ADD CONSTRAINT FK_Zakaz_TO_Klient_Alt
+Foreign Key(KlientID) REFERENCES Klient_alt(Id);
 
+use TestDatabas;
+exec sp_help Zakaz
 
 -- 8. Напишите  5  запросов,  используя  агрегатные  функции  (SUM,  MAX,  MIN,  AVG, 
 -- COUNT)
