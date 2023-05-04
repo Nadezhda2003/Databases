@@ -137,6 +137,9 @@ having avg(Exp) > (select avg(exp) from Doctor)
 
 -- 13. Написать  по два запроса на каждое соединение  таблиц:  внутреннее,  внешнее 
 -- левое, внешнее правое, полное внешнее  соединение.
+use Polyclinic
+select DName +' '+ DMName+' ' + DSurname as ФИО, SName from Speciality
+inner join Doctor on Speciality.Id = Doctor.PId
 
 -- 14. Написать по два запроса на пересечение, разность, объединение таблиц
 
