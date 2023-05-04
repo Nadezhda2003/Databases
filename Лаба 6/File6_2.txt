@@ -1,34 +1,87 @@
-use TestBD1
-Create table TestTable1
+--Создание таблицы
+use TestDatabas
+if Object_ID('dbo.klient_alt','U') is not NULL
+Drop table dbo.klient_alt;
+Create table Klient_alt
 (
-    iId int Default 1,
-    CONSTRAINT ckeck_iId CHECK(iId is not null)
+    Id int Primary Key,
+    Age int,
+    NName NVARCHAR(20),
+    Fio NVARCHAR(20),
+    Email VARCHAR(30),
+    Phone VARCHAR(20)
 )
 
-insert into TestTable1
-Values(10)
+--Добавление нового столбца
+use TestDatabas;
+Alter Table dbo.Klient_alt
+Add Adress NVARCHAR(50) NULL;
 
-update TestTable1
-set iId=Null
+--Добавление не нулевого столбца
+use TestDatabas;
+Alter Table dbo.Klient_alt
+ADD Adress NVARCHAR(50) Not Null Default 'нет';
 
---Ограничение CHECK
-use TestBD1
-Create table TestTable2
+--Удаление столбца
+use TestDatabas;
+Alter table dbo.klient_alt
+drop column Phone
+
+
+--Изменение типа столбца
+use TestDatabas;
+Alter table dbo.Klient_alt
+Alter column NName NVARCHAR(200);
+
+--Добавление ограничения CHECK
+use TestDatabas;
+Alter table dbo.Klient_alt With NoCheck
+ADD CHECK (Age>21)
+
+--Добавление внешнего ключа. Добавление первичного ключа.
+use TestDatabas;
+if Object_ID('dbo.Klient_alt', 'U') is not Null
+Drop Table dbo. Klient_alt;
+Create table Klient_alt
 (
-    id int Default 1 not null,
-    vcName VARCHAR(50) Not null,
-    dBirthDate datetime,
-    CONSTRAINT Ck_birthdate
-    Check (dBirthDate >'01-01-1900' AND dBirthDate < getdate())
-)
-
-use TestBD1
-Create table TestTable4
+    Id int Primary key Identity,
+    Age int not null,
+    NName NVARCHAR(20) Not Null,
+    Fio NVARCHAR(20) Not Null,
+    Email VARCHAR(30) UNIQUE,
+    Phone VARCHAR(20) UNIQUE
+);
+if Object_ID('dbo.Zakaz', 'U') is not null
+Drop Table dbo.Zakaz;
+Create table Zakaz
 (
-    id int Default 1 not null,
-    vcName VARCHAR(50) Not null,
-    dBirthDate datetime,
-    dDocDate datetime,
-    CONSTRAINT Ck_birthdate
-    Check (dDocDate>dBirthDate And dBirthDate<getdate())
-)
+    Id int Identity,
+    KlientID int,
+    CreatedA Date
+);
+Alter Table Zakaz
+Add Foreign key (KlientID) REFERENCES Klient_alt(Id);
+Alter Table Zakaz
+Add Primary Key(Id);
+
+--Добавление(Удаление) ограничений с именами
+use TestDatabas;
+Alter Table Zakaz
+Drop PK__Zakaz__3214EC07D44D72AD;
+
+use TestDatabas;
+Alter table dbo.Zakaz
+Add CONSTRAINT PK_Zakaz_id Primary Key(Id);
+Alter Table dbo.Zakaz
+ADD CONSTRAINT FK_Zakaz_TO_Klient_Alt
+Foreign Key(KlientID) REFERENCES Klient_alt(Id);
+Alter Table dbo.Klient_alt
+Add CONSTRAINT CK_Klient_alt_age2 CHECK(Age>0);
+
+--Удаление ограничений
+use TestDatabas;
+exec sp_help Zakaz
+
+--Переименование таблиц и других объектов баз данных
+use TestDatabas
+exec sp_rename 'Klient_alt.Fio', 'Fi'

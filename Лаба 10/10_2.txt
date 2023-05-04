@@ -1,0 +1,172 @@
+--1
+use Ucheb_6_Bazhanova
+select FIO, Len(FIO) as Количество_символов
+from Student
+
+--2
+select trim(FIO) as ФИО, Data, spez, godpost
+from Student
+
+--3
+select FIO, charindex('о', FIO) as Позиция_о
+from Student
+
+--4
+select FIO, Left(spez, 3) as Спец_3
+from Student
+
+--6
+select FIO, Data, Replace(spez, 'математика', 'прикладная математика') as Спец,
+godpost
+from Student
+
+--7
+select FIO, Data, UPPER(spez) as Спец, godpost
+from Student
+
+--8
+Select FIO, reverse(FIO) as ФИО_Обр
+from Student Название
+
+--9
+select DISTINCT
+replicate(spez, 4) as Спец_4
+from Student
+
+--10
+select abs(cos(pi())) as Косинус_Пи,
+abs(sin(PI())) as Синус_Пи,
+abs(tan(Pi())) as Тангенс_Пи,
+abs(cot(pi())) as Котангенс_Пи
+
+--11
+select round(123.456, 3) as Окр3,
+round(123.456, 2) as Окр2,
+round(123.456, 1) as Окр1,
+round(123.456, 0) as Окр0,
+round(123.456, -1) as Окр_1,
+round(123.456, -2) as Окр_2,
+round(123.456, -3) as Окр_3
+
+--12
+select ceiling(123.456) as Больше,
+floor(123.456) as Меньше
+
+--13
+select sqrt(25) as Корень,
+square(25) as Квадрат,
+power(25, 3) as Куб
+
+--14
+select getdate() as Сейчас
+
+--15
+select
+day(getdate()) as День,
+month(getdate()) as Месяц,
+year(getdate()) as Год,
+datepart(hour, getdate()) as Час,
+datepart(minute, getdate()) as Минута,
+datepart(second, getdate()) as Секунда,
+datepart(quarter, getdate()) as Квартал,
+datepart(week, getdate()) as Неделя,
+datepart(dayofyear, getdate()) as День_года,
+datepart(weekday, getdate()) as День_недели
+
+
+--16
+select Dateadd(day, -100, getdate()) as День_100_Назад
+
+--17
+select DateDiff(Day, '18950708','19710412') as Количество_прожитых_дней
+
+--18
+select FIO, case month(Data)
+when 3 then 'Весна'
+when 4 then 'Весна'
+when 5 then 'Весна'
+when 6 then 'Лето'
+when 7 then 'Лето'
+when 8 then 'Лето'
+when 9 then 'Осень'
+when 10 then 'Осень'
+when 11 then 'Осень'
+else 'Зима'
+end as Времени_года
+from Student
+
+--19
+select FIO, Data, spez, godpost, iif(godpost - year(Data) <=18, 'Молодой','старше')
+as Возраст_при_поступлении
+from Student
+
+--20
+select
+FIO, Data, case
+when (month(Data)=3 and day(Data) >=21) or (month(Data)=4 and day(Data) <= 20) then 'Овен'
+when (month(Data)=4 and day(Data) >=21) or (month(Data)=5 and day(Data) <= 21) then 'Телец'
+when (month(Data)=5 and day(Data) >=22) or (month(Data)=6 and day(Data) <= 21) then 'Близнецы'
+when (month(Data)=6 and day(Data) >=22) or (month(Data)=7 and day(Data) <= 22) then 'Рак'
+when (month(Data)=7 and day(Data) >=23) or (month(Data)=8 and day(Data) <= 21) then 'Лев'
+when (month(Data)=8 and day(Data) >=22) or (month(Data)=9 and day(Data) <= 23) then 'Девы'
+when (month(Data)=9 and day(Data) >=24) or (month(Data)=10 and day(Data) <= 23) then 'Весы'
+when (month(Data)=10 and day(Data) >=24) or (month(Data)=11 and day(Data) <= 22) then 'Скорпион'
+when (month(Data)=11 and day(Data) >=23) or (month(Data)=12 and day(Data) <= 22) then 'Стрелец'
+when (month(Data)=12 and day(Data) >=23) or (month(Data)=1 and day(Data) <= 20) then 'Козерог'
+when (month(Data)=1 and day(Data) >=21) or (month(Data)=2 and day(Data) <= 19) then 'Водолей'
+when (month(Data)=2 and day(Data) >=20) or (month(Data)=3 and day(Data) <= 20) then 'Рыбы'
+end as Знак_зодиака
+from Student
+
+--1.  Вывести список студентов, отсортированный по количеству символов в ФИО.
+Select FIO, len(FIO) as Len
+from Student
+order by len(FIO)
+
+--2.  Вывести список студентов, убрать лишние пробелы в ФИО.
+select trim(FIO) as ФИО, Data, spez, godpost
+from Student
+
+--3.  Найти позиции «ов» в ФИО каждого студентов. Вывести ФИО и номер позиции.
+select FIO, charindex('ов', FIO) as Позиция_ов
+from Student
+
+--4.  Вывести ФИО и последние две буквы специализации для каждого студента.
+select FIO, right(spez, 2) as Спец_2
+from Student
+
+--5.  Вывести список студентов, ФИО в формате Фамилия и Инициалы.
+SELECT    CONCAT( SUBSTRING(FIO,0, CHARINDEX(' ', FIO)+2), 
+     SUBSTRING(SUBSTRING(FIO, CHARINDEX(' ', FIO)+2, LEN(FIO)-CHARINDEX(' ', FIO)-1), CHARINDEX(' ', SUBSTRING(FIO, CHARINDEX(' ', FIO)+2,
+	 LEN(FIO)-CHARINDEX(' ', FIO)-1)), 2))
+as FIO
+FROM Student
+
+--6.  Вывести список специализаций в правильном и обратном виде. Убрать дубликаты.
+Select DISTINCT spez, reverse(spez) as Spez_Обр
+from Student
+
+--7.  Вывести свою фамилию в одной строке столько раз, сколько вам лет.
+declare @l int, @n1 char(8) = 'Бажанова'
+set @l = year(getdate())-year(2003-10-30)
+while @l>0
+begin
+print @n1
+set @l=@l-1
+end
+
+--8.  Вывести абсолютное значение функций с точностью два знака после десятичной запятой.
+select round(square(sin(PI()/2))-(cos(3*pi()/2)), 2) as Значение
+
+--9.  Вывести количество дней до конца семестра.
+select DateDiff(Day, getdate(),'20230603') as Количество__дней
+
+--10.  Вывести количество месяцев от вашего рождения.
+SELECT datediff(month, getdate(), '2003-10-30') as Количество_прожитых_месяцев
+
+--12.  Вывести список специализаций без повторений. Для каждой специализации вывести «длинный»
+--или «короткий», в зависимости от количества символов. 
+select DISTINCT spez,
+iif(len(spez) <= 10, 'короткий','длинный')
+as Длина_специальности
+from Student

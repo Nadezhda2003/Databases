@@ -25,7 +25,7 @@ union select Nazvanie, Stolica, PL, KolNas, Kontinent
 from Tabl_Kontinent$
 where Kontinent='Азия' and
 cast(KolNas as float)/PL >300
-union select Nazvanie, Stolica, KolNas, Kontinent
+union select Nazvanie, Stolica, PL, KolNas, Kontinent
 from Tabl_Kontinent$
 where Kontinent='Африка' and
 cast(KolNas as float)/PL>200
