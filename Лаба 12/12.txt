@@ -31,8 +31,7 @@ select TOP 5 * from Patient
 --порядке
 SELECT *
     FROM Patient
-    ORDER BY
-    FIO
+    ORDER BY Surname DESC
     OFFSET 3 ROWS
     FETCH NEXT 4 ROWS ONLY
 
@@ -49,44 +48,88 @@ SELECT * FROM Doctors_birthdays
 
 -- 4. С помощью языка T-SQL написать и выполнить 7 запросов на фильтрацию данных 
 -- с использованием в запросах операторов сравнения, логических операторов
+use Polyclinic
+select Birth_Date from Patient
+where Name = 'Владимир' and Surname = 'Белопольский' and MName = 'Сергеевич'
 
+use Polyclinic
+select * from Patient
+where YEAR(Birth_Date) in ('2002','2003')
+
+select * from Visit
+where VDate < '2021-05-26'
+
+select DName from Doctor
+where DName like 'В%';
+
+select * from Patient
+where Birth_Date between '2001-01-01' and '2005-12-31'
+
+SELECT Surname FROM Patient
+WHERE Surname LIKE '[^м-с, ^б]%';
+
+use Polyclinic
+select * from Patient
+where DATEDIFF(year, Birth_Date, getdate()) > 21
 
 -- 5. Переименуйте одну из таблиц вашей БД
 use Polyclinic
 exec sp_rename 'Doctor', 'List_Doctors'
 
 -- 6. Добавьте по две записи в каждую из таблиц вашей БД
+insert into Visit values
+('2022-10-20', 108374, 1, 4),
+('2021-09-11', 120494, 3, 1)
 
+insert into Patient values
+(128372, 'Константин', 'Выслов', 'Гурьевич', '2005-02-28'),
+(123904, 'Василиса', 'Чекало','Викторовна','2002-08-10')
 
 -- 7. добавьте по смыслу один столбец
-use TestDatabas;
-Alter Table dbo.Klient_alt
-Add Adress NVARCHAR(50) NULL;
+use Polyclinic
+Alter Table dbo.Doctor
+Add Phone NVARCHAR(13)
 
-use TestDatabas;
-Alter table dbo.klient_alt
-drop column Phone
 
 -- добавьте ограничение с именем на новый введенный вами столбец
-Alter Table dbo.Zakaz
-ADD CONSTRAINT FK_Zakaz_TO_Klient_Alt
-Foreign Key(KlientID) REFERENCES Klient_alt(Id);
+Alter Table dbo.Doctor
+ADD CONSTRAINT CK_Doctor
+Check(Left(Phone, 4) ='+375' or Left(Phone, 2)= '80');
 
-use TestDatabas;
-exec sp_help Zakaz
 
 -- 8. Напишите  5  запросов,  используя  агрегатные  функции  (SUM,  MAX,  MIN,  AVG, 
 -- COUNT)
+use Polyclinic
+select * from Doctor
+where Exp = (select min(Exp) from Doctor)
 
+use Polyclinic
+select * from Doctor
+where Exp = (select max(Exp) from Doctor)
+
+select Exp, count(Id_Doc) as [Кол-во докторов] from Doctor
+group by Exp
+having exp > (select avg(exp) from Doctor)
 
 -- 9. Написать 2 запроса на группировку данных, используя оператор GROUP BY
+use Polyclinic
+select Exp, count(Id_Doc) as [Кол-во докторов] from Doctor
+group by Exp
 
+select PId, avg(Exp) as [Средний стаж по каждой специальности] from Doctor
+group by PId
 
 -- 10.  Написать 2 запроса на фильтрацию групп, используя HAVING.
+select Exp, count(Id_Doc) as [Кол-во докторов] from Doctor
+group by Exp
+having exp > (select avg(exp) from Doctor)
 
+
+select PId, avg(Exp) as [Средний стаж по каждой специальности] from Doctor
+group by PId
+having avg(Exp) > (select avg(exp) from Doctor)
 
 -- 11. Написать запросы на расширения SQL Server для группировки (ROLLUP, CUBE, GROUPING SETS, OVER)
-
 
 -- 12. Написать  запрос  на  разворачивание  данных (PIVOT),  отмена  разворачивания 
 -- (UNPIVOT).
