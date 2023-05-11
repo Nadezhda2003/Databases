@@ -131,9 +131,41 @@ having avg(Exp) > (select avg(exp) from Doctor)
 
 -- 11. Написать запросы на расширения SQL Server для группировки (ROLLUP, CUBE, GROUPING SETS, OVER)
 
+select PId, COUNT(Id_Doc) as itog
+from Doctor
+group by rollup(PId)
+
+select PId, Exp, count(Id_Doc) as itog
+from Doctor
+group by cube(PId, Exp)
+
+select PId, Exp, count(Id_Doc) as itog
+from Doctor
+group by grouping sets(PId, Exp)
+
+select DSurname, PId,
+count(*) over (partition by PId) as [Количество докторов по специальности]
+from Doctor
+
 -- 12. Написать  запрос  на  разворачивание  данных (PIVOT),  отмена  разворачивания 
 -- (UNPIVOT).
+use Polyclinic
+Select 'Количество' as [Количество пациентов по районам],
+[Могилевское РОВД],
+[Первомайское РУВД г. Минска]
+from (
+select Vudan, Id_Num from Passport)
+as source_table
+pivot
+(
+count(Id_Num) for Vudan in ([Могилевское РОВД],
+[Первомайское РУВД г. Минска])
+) as Pivot_table
 
+use Polyclinic
+select VPatient, [Id доктора или диагноза] from Visit
+UNPIVOT (
+[Id доктора или диагноза] for Значение in (VDoc, Diad)) unpvt
 
 -- 13. Написать  по два запроса на каждое соединение  таблиц:  внутреннее,  внешнее 
 -- левое, внешнее правое, полное внешнее  соединение.
@@ -141,11 +173,92 @@ use Polyclinic
 select DName +' '+ DMName+' ' + DSurname as ФИО, SName from Speciality
 inner join Doctor on Speciality.Id = Doctor.PId
 
--- 14. Написать по два запроса на пересечение, разность, объединение таблиц
+select VId, DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Name+' '+MName+' '+Surname as [ФИО пациента], VDate from Visit
+inner join Doctor on Visit.VDoc = Doctor.PId
+left join Patient on Visit.VPatient = Patient.N_Card
 
+select VId, Name+' '+MName+' '+Surname as [ФИО пациента], DName from Diagnosis
+right join Visit on Visit.Diad = Diagnosis.Id
+left join Patient on Visit.VPatient = Patient.N_Card
+
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Ser_Num, Vudan, Vudan_Date from Doctor
+right join Passport on Passport.Id_Num = Doctor.PId_Num
+
+select DName +' '+ DMName+' ' + DSurname as ФИО, SName from Speciality
+full outer join Doctor on Speciality.Id = Doctor.PId
+
+select VId, DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Name+' '+MName+' '+Surname as [ФИО пациента], VDate from Visit
+inner join Doctor on Visit.VDoc = Doctor.PId
+full outer join Patient on Visit.VPatient = Patient.N_Card
+
+
+-- 14. Написать по два запроса на пересечение, разность, объединение таблиц
+use Polyclinic
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor
+where Exp > 5 union
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor
+where PId between 1 and 5
+
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor
+where Exp > 5
+except
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor
+where PId between 1 and 5
+
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor
+where Exp > 5
+intersect
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor
+where PId between 1 and 5
 
 -- 15. Написать 4 запроса с использованием подзапросов, используя операторы сравнения, 
 -- операторы IN, ANY|SOME и ALL,  предикат EXISTS
+
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor where
+DSurname in (
+    select DSurname from Doctor
+    Group by
+    DSurname having
+    avg(Exp) > (
+        select avg(Exp)
+        from Doctor
+    )
+)
+
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor where
+DName = 'Виктор'
+and Exp > all (
+    select Exp
+    from Doctor
+    where DName = 'Сергей'
+)
+
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor where
+DName = 'Виктор'
+and Exp > any (
+    select Exp
+    from Doctor
+    where DName = 'Сергей'
+)
+
+select DName +' '+ DMName+' ' + DSurname as [ФИО доктора], Exp, PId
+from Doctor where
+DName = 'Виктор'
+and exists (
+    select *
+    from Doctor
+    where DName = 'Сергей'
+    and Exp >= 3
+)
 
 --16.  Написать 4 запроса по строковым функциям
 
