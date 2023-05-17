@@ -261,13 +261,91 @@ and exists (
 )
 
 --16.  Написать 4 запроса по строковым функциям
+select *, len(SName) from Speciality
 
+select Id, left(SName, 3) from Speciality
+
+select reverse(DName) from Diagnosis
+
+select stuff(DName, 4, 16, '.') from Diagnosis
 
 -- 17.  Написать 4 запроса по числовым функциям
 
+select Square(Exp) from Doctor
+
+select cos(Exp) from Doctor
+
+select log10(Exp) from Doctor
+
+select sigh(Exp) from Doctor
 
 -- 18. Создайте 5 представлений по своей БД
 
+create view VisitDoctorPatient (VisitDate, Doctor, Patient)
+as select Visit.VDate, Doctor.DSurname, Patient.Surname
+from Visit inner join Doctor on Visit.VDoc = Doctor.PId
+inner join Patient on Visit.VPatient = Patient.N_Card
+
+create view VisitDiag (VisitDate, Diag)
+as select Visit.Date, Diagnosis.DName
+from Visit inner join Diagnosis on Visit.Diad = Diagnosis.Id
+
+create view PassportDoctor (DSurname, Ser_Num, Vudan, Vudan_Date)
+as select Dactor.DSurname, Passport.Ser_Num, Passport.Vudan, Passport.Vudan_Date
+from Doctor inner join Passport on Passport.Id_Num = Doctor.PId_Num
+
+create view DoctorSpez (DSurname, SName)
+as select Doctor.DSurname, Speciality.SName from Speciality inner join Doctor
+on Speciality.Id = Doctor.PId
+
+create view PatientDate (Surname, VisitDate)
+as select Patient.Surname, Visit.VDate from Patient
+inner join Visit on Visit.VPatient = Patient.N_Card
 
 -- 19.  Покажите применение табличных переменных, временные локальных и глобальных 
 -- таблиц, а так же обобщенных табличных выражений. 
+
+DECLARE @myTableVariable TABLE (
+	[ID] INT,
+	[Name] VARCHAR(50),
+	[Age] INT
+)
+INSERT INTO @myTableVariable
+VALUES (1, 'John', 25),
+   	(2, 'Kate', 30),
+   	(3, 'Mike', 35)
+
+SELECT [ID], [Name], [Age]
+FROM @myTableVariable
+
+CREATE TABLE #tempTable (
+	[Name] VARCHAR(50),
+	[Expe] INT
+)
+
+INSERT INTO #tempTable
+SELECT DName, Exp
+FROM Doctor
+SELECT * FROM #tempTable
+
+CREATE TABLE ##tempTable
+(VDate date, Diag int)
+ 
+INSERT INTO ##tempTable
+SELECT VDate, Diad
+FROM Visit
+ 
+SELECT * FROM ##tempTable
+order by VDate
+
+DROP TABLE #tempTable
+DROP TABLE ##tempTable
+
+WITH temp AS
+(
+    SELECT N_Card,
+    Name+' '+MName+' '+Surname as [ФИО]
+    FROM Patient
+)
+ 
+SELECT * FROM OrdersInfo
