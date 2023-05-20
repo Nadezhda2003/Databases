@@ -348,4 +348,5 @@ WITH temp AS
     FROM Patient
 )
  
-SELECT * FROM OrdersInfo
+SELECT * FROM temp
+
