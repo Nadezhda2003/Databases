@@ -1,0 +1,108 @@
+use Polyclinic
+
+-- Напишите хранимую процедуру для вывода трех докторов с наименьшим-- стажем с именем Виктор, вызовите ее.
+
+create proc proc3 @Name as varchar(50) = 'Виктор'
+
+as begin
+
+select top 3
+DName, DMName, DSurname, Exp from Doctor
+
+where DName = @Name
+order by Exp
+
+end
+
+execute proc3 default
+
+-- Напишите хранимую процедуру, которая возвращает количество
+-- докторов, содержащих в фамилии заданную букву, и вызовите ее
+
+create proc proc2
+@Буква as char(1),
+
+@Количество as int
+output
+as begin select @Количество = Count(*)
+
+from Doctor
+where CHARINDEX(@Буква, DSurname) >0
+
+end
+
+declare @K as int
+declare @B as char(1)
+
+set @B = 'а'
+execute proc2 @B, @K output
+
+select @K as [Кол-во докторов]
+
+-- Напишите функцию для вывода списка докторов со стажем в интервале
+-- заданных значений, и вызовите ее
+
+create function fun1(
+
+@a1 as float,
+@b1 as float
+
+)
+returns table
+
+as return (select * from Doctor
+
+where Exp between @a1 and @b1)
+
+select * from dbo.fun1(2, 7)
+
+-- Напишите функцию для вывода Номера паспорта данного доктора с заданной фамилией, и вызовите ее
+create function fun2
+
+(@Str as varchar(50)
+
+)
+returns varchar(50)
+
+as begin
+declare @s as varchar(14)
+
+select @S = PId_Num
+from Doctor
+
+where DSurname = @Str
+return @S
+
+end
+
+select dbo.fun2('Северная')
+
+-- триггер, который будет срабатывать при добавлении и обновлении данных пишет "Данные обновлены"
+CREATE TRIGGER isert_update
+
+ON Visit
+AFTER INSERT, UPDATE
+
+AS
+begin print 'Данные обновлены'
+
+end
+
+insert into Visit values('2011-11-29', 128793,  1, 4)
+
+-- триггер на добавление записи из таблицы «Visit».
+
+-- Данный триггер, при попытке добавления данных, выводит «Нельзя -- добавить данные»
+
+create trigger trig2
+on Visit
+
+instead of insert
+as
+
+begin
+print 'Нельзя добавить данные'
+
+end
+
+insert into Visit values('2011-11-29', 128793,  1, 4)
