@@ -1,0 +1,126 @@
+create proc proc1as
+begin
+select @@SERVERNAME as Сервер, @@VERSION as ВерсияСУБД
+, DB_NAME() as БазаДанных,User as ПользовательБД,
+SYSTEM_USER as СистемныйПользователь
+end
+exec proc1
+
+create proc proc2
+@Буква as char(1),
+@Количество as int output
+as begin select @Количество = Count(*)
+from Ucheb_6_Bazhanova.dbo.Tabl_Kontinent$where CHARINDEX(@Буква, Nazvanie) >0
+end
+
+declare @K as int
+declare @B as char(1)
+set @B = 'у'
+execute proc2 @B, @K output
+select @K as [Кол-во стран]
+create proc proc3 @Kont as varchar(50) = 'Европа'
+as begin
+select top 3
+Nazvanie, Stolica, Pl, KolNas, Kontinent from Ucheb_6_Bazhanova.dbo.Tabl_Kontinent$where Kontinent = @Kont
+order by PLend
+execute proc3 default
+create proc proc4
+as
+begin
+select * from Tabl_Kontinent$end
+exec proc4
+
+
+create proc proc5
+@Num int,@Количество as int output
+as begindeclare @s int = 1
+while @Num/10 > 0begin set @Num = @Num / 10
+set @s = @s+1end
+set @Количество = @send
+declare @K as int
+declare @B as int
+set @B = 1234
+execute proc5 @B, @K output
+select @K as [Кол-во цифр]
+
+
+create proc proc6
+ @B varchar(1) = 'Б'as begin
+create table TestTable1(Str varchar(50))
+insert into TestTable1
+select Nazvanie from Tabl_Kontinent$
+where LEFT(Nazvanie, 1) = @Bselect * from TestTable1
+end
+exec proc6
+
+
+create function fun5
+(@a1 as float
+)
+returns table
+as return (select Nazvanie, Stolica, Pl, KolNas, Kontinent from Ucheb_6_Bazhanova.dbo.Tabl_Kontinent$
+where pl < @a1)
+select * from dbo.fun5(10000)
+
+create function fun5
+(@a1 as float,
+@b1 as float)
+returns table
+as return (
+select Nazvanie, Stolica, Pl, KolNas, Kontinent from Ucheb_6_Bazhanova.dbo.Tabl_Kontinent$
+where pl between @a1 and @b1)
+select * from dbo.fun1(100, 1000)
+
+
+create function fun2
+(@Str as varchar(50)
+)
+returns varchar(50)
+as begin
+declare @S
+as varchar(50)
+select @S = Stolica
+from Ucheb_6_Bazhanova.dbo.Tabl_Kontinent$
+where Nazvanie = @Str
+return @S
+end
+
+select dbo.fun2('Австрия')
+create function fun3(
+@Nas as int,@Poch as float)
+returns float
+as
+begin
+declare @p as float
+set @p = round(cast(@Nas as float) / @Poch, 2)
+return @p
+end
+select Nazvanie, Stolica, Pl, KolNas, dbo.fun3(KolNas, Pl) as Плотность from Ucheb_6_Bazhanova.dbo.Tabl_Kontinent$
+create trigger trig1 on Student
+for insert as
+begin print 'Запись добавлена'
+end
+insert  into Student values('Жив Павел Викторович', '2021-06-23', 'математика', 2019)
+create trigger trig2
+on Student
+instead of delete
+as
+begin
+print 'Нельзя удалить данные'
+end
+delete Student
+where godpost = 2019
+create table Студент_Архив1(
+Fio nvarchar(40) null,Data date null,
+spez nvarchar(20) null,godpost int null,
+Удалено datetime not null)
+create trigger trig3
+on Studentfor delete
+as begin
+insert Студент_Архив1
+select Fio, Data, spez, godpost, getdate() as Удалено
+from deleted
+end
+delete Student
+where godpost = 2018
+select * from Студент_Архив1
